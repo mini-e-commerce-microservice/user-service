@@ -1,0 +1,85 @@
+openapi: 3.0.1
+info:
+ contact: {}
+ title: user service api
+ version: 1.0.0
+servers:
+  - url: http://localhost:3001
+paths:
+  /v1/profile/{id}:
+    get:
+      operationId: V1GetProfile
+      parameters:
+        - name: id
+          in: path
+          description: params user id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1GetProfile200Response'
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - profile
+
+components:
+  schemas:
+    V1GetProfile200Response:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      required:
+        - id
+        - name
+    Error400:
+      type: object
+      properties:
+        request_id:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+        - errors
+        - request_id
+    Error:
+      type: object
+      properties:
+        request_id:
+          type: string
+        message:
+          type: string
+      required:
+        - message
+        - request_id
+

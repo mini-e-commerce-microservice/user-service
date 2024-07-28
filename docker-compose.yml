@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  user_svc:
+    image: postgres:16
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: user-svc
+      POSTGRES_USER: user-svc
+      POSTGRES_PASSWORD: user-svc
+    volumes:
+      - user_svc_data:/var/lib/postgresql/data
+volumes:
+  user_svc_data:
