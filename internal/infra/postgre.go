@@ -2,21 +2,33 @@ package infra
 
 import (
 	"context"
-	pgxotel "github.com/SyaibanAhmadRamadhan/pgx-otel"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"user-service/internal/conf"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+	"github.com/rs/zerolog/log"
+	"time"
+	"user-service/internal/primitive"
 	"user-service/internal/util"
 )
 
-func OpenConnectionPostgres() *pgxpool.Pool {
-	ctx := context.Background()
-	pool, err := pgxpool.New(ctx, conf.GetDatabaseDSN())
+func NewPostgresql(dsn string) (*sqlx.DB, primitive.CloseFn) {
+	db, err := sqlx.Connect("postgres", dsn)
 	util.Panic(err)
 
-	pool.Config().ConnConfig.Tracer = pgxotel.NewTracer()
-
-	err = pool.Ping(ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err = db.PingContext(ctx)
 	util.Panic(err)
 
-	return pool
+	log.Info().Msg("initialization postgresql successfully")
+	return db, func(ctx context.Context) (err error) {
+		log.Info().Msg("starting close postgresql db")
+
+		err = db.Close()
+		if err != nil {
+			return err
+		}
+
+		log.Info().Msg("close postgresql db successfully")
+		return
+	}
 }

@@ -1,11 +1,22 @@
 package conf
 
 import (
+	"flag"
+	"github.com/go-faker/faker/v4"
 	"github.com/spf13/viper"
 	"user-service/internal/util"
 )
 
+var conf *Config
+
 func Init() {
+	if flag.Lookup("test.v") != nil {
+		fakeConf := Config{}
+		err := faker.FakeData(&fakeConf)
+		util.Panic(err)
+		conf = &fakeConf
+		return
+	}
 
 	listDir := []string{".", "../", "../../", "../../../", "../../../../"}
 
@@ -18,6 +29,9 @@ func Init() {
 			viper.SetConfigName("env.override")
 			err = viper.MergeInConfig()
 			util.Panic(err)
+			if err = viper.Unmarshal(&conf); err != nil {
+				panic(err)
+			}
 			return
 		}
 	}
@@ -25,6 +39,6 @@ func Init() {
 	panic("cannot load env")
 }
 
-func GetDatabaseDSN() string {
-	return viper.GetString("DATABASE_DSN")
+func GetConfig() *Config {
+	return conf
 }

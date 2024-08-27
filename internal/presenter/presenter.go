@@ -1,85 +1,43 @@
 package presenter
 
 import (
-	"encoding/json"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"net/http"
-	"strconv"
 	"time"
-	"user-service/internal/util"
+	"user-service/internal/presenter/handler"
 )
 
-func New() {
+type Presenter struct {
+	//DependencyService *service.Dependency
+	Port int
+}
+
+func New(presenter *Presenter) *http.Server {
 	r := chi.NewRouter()
 
-	// A good base middleware stack
-	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(60 * time.Second))
-	r.Post("/", WithOtel(largeResponseHandler))
+	r.Use(middleware.Timeout(30 * time.Second))
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3002"},
+		AllowedHeaders:   []string{"Origin", "Test", "Content-Type", "Accept", "X-Request-Id", "Authorization"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowCredentials: true,
+	}))
 
-	err := http.ListenAndServe(":3333", r)
-	util.Panic(err)
-}
+	handler.NewHandler(r)
 
-// Profile is a sample profile structure
-type Profile struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Address string `json:"address"`
-}
-
-// LargeResponse represents a larger JSON response structure
-type LargeResponse struct {
-	Profiles []Profile `json:"profiles"`
-	Meta     MetaData  `json:"meta"`
-}
-
-// MetaData represents additional metadata
-type MetaData struct {
-	Page       int `json:"page"`
-	PageSize   int `json:"page_size"`
-	TotalCount int `json:"total_count"`
-	TotalPages int `json:"total_pages"`
-}
-
-// Example handler that sends a large JSON response
-func largeResponseHandler(w http.ResponseWriter, r *http.Request) {
-	// Creating a large list of profiles
-	profiles := make([]Profile, 0, 1000)
-	for i := 1; i <= 1000; i++ {
-		profiles = append(profiles, Profile{
-			ID:      i,
-			Name:    "Name " + strconv.Itoa(i),
-			Address: "Address " + strconv.Itoa(i),
-		})
+	s := &http.Server{
+		Addr:              fmt.Sprintf(":%d", presenter.Port),
+		Handler:           r,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		WriteTimeout:      10 * time.Second,
 	}
 
-	// Creating metadata
-	meta := MetaData{
-		Page:       1,
-		PageSize:   1000,
-		TotalCount: 1000,
-		TotalPages: 1,
-	}
-
-	// Creating large response
-	largeResponse := LargeResponse{
-		Profiles: profiles,
-		Meta:     meta,
-	}
-
-	// Marshalling large response to JSON
-	b, err := json.Marshal(largeResponse)
-	if err != nil {
-		http.Error(w, "Failed to marshal JSON", http.StatusInternalServerError)
-		return
-	}
-
-	// Writing response
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(b)
+	return s
 }

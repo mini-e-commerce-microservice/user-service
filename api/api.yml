@@ -6,17 +6,9 @@ info:
 servers:
   - url: http://localhost:3001
 paths:
-  /v1/profile/{id}:
+  /v1/profile:
     get:
       operationId: V1GetProfile
-      parameters:
-        - name: id
-          in: path
-          description: params user id
-          required: true
-          schema:
-            type: integer
-            format: int64
       responses:
         '200':
           description: OK
@@ -37,27 +29,164 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: INTERNAL SERVER ERROR
+          description: NOT FOUND
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
       tags:
         - profile
-
+  /v1/register:
+    post:
+      operationId: V1RegisterPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1RegisterPostRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1RegisterPost200Response'
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - register
 components:
   schemas:
+    V1RegisterPost200Response:
+      type: object
+      properties:
+        upload_profile_image:
+          $ref: '#/components/schemas/FileUploadResponse'
+        upload_background_image:
+          $ref: '#/components/schemas/FileUploadResponse'
+        id:
+          type: integer
+          format: int64
+      required:
+        - id
+    V1RegisterPostRequestBody:
+      type: object
+      properties:
+        image_profile:
+          $ref: '#/components/schemas/FileUploadRequest'
+        background_image:
+          $ref: '#/components/schemas/FileUploadRequest'
+        email:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required,max=255,min=6,email"
+        password:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required,max=50,min=6"
+        re_password:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required,eqfield=Password"
+        full_name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required,max=20,min=6"
+      required:
+        - email
+        - full_name
+        - re_password
     V1GetProfile200Response:
       type: object
       properties:
         id:
           type: integer
           format: int64
-        name:
+        full_name:
+          type: string
+        image:
+          type: string
+        background_image:
+          type: string
+        email:
           type: string
       required:
         - id
-        - name
+        - full_name
+        - image
+        - background_image
+        - email
+    FileUploadRequest:
+      type: object
+      properties:
+        checksum_sha256:
+          type: string
+          description: sha256 checksum file
+          x-oapi-codegen-extra-tags:
+            binding: required
+        identifier:
+          type: string
+          description: identifier
+          x-oapi-codegen-extra-tags:
+            binding: required
+        mime_type:
+          type: string
+          description: 'common mime type: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types'
+          x-oapi-codegen-extra-tags:
+            binding: required
+        original_filename:
+          type: string
+          description: original filename
+          x-oapi-codegen-extra-tags:
+            binding: required
+        size:
+          type: integer
+          format: int64
+          description: sizes in bytes
+          x-oapi-codegen-extra-tags:
+            binding: required
+      required:
+        - checksum_sha256
+        - identifier
+        - mime_type
+        - original_filename
+        - size
+    FileUploadResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: identifier response from request
+        upload_expired_at:
+          type: string
+          format: date-time
+        upload_url:
+          type: string
+        minio_form_data:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - identifier
+        - upload_expired_at
+        - upload_url
+        - minio_form_data
     Error400:
       type: object
       properties:

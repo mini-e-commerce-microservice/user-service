@@ -2,10 +2,19 @@
 
 MIGRATE_CMD=migrate
 MIGRATE_DIR=./migrations
-DB_DSN=postgres://user-svc:user-svc@127.0.0.1:5433/user-svc?sslmode=disable
+DB_DSN=postgres://user-svc:user-svc@localhost:5433/user-svc?sslmode=disable
 DATE=$(shell date +%Y%m%d_%H%M%S)
 
-generate: api/api.yml
+# Generates mocks for interfaces
+INTERFACES_GO_FILES := $(shell find internal -name "interfaces.go")
+INTERFACES_GEN_GO_FILES := $(INTERFACES_GO_FILES:%.go=%.mock.gen.go)
+
+generate_mocks: $(INTERFACES_GEN_GO_FILES)
+$(INTERFACES_GEN_GO_FILES): %.mock.gen.go: %.go
+	@echo "Generating mocks $@ for $<"
+	mockgen -source=$< -destination=$@ -package=$(shell basename $(dir $<))
+
+generate: api/api.yml generate_mocks
 	mkdir -p generated/api
 	oapi-codegen --package api -generate types $< > generated/api/api-types.gen.go
 
