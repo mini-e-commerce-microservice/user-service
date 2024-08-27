@@ -35,17 +35,19 @@ func Test_repository_FindOneUser(t *testing.T) {
 		}
 		expectedOutput := users.FindOneUserOutput{
 			Data: model.User{
-				ID:    expectedInput.ID.Int64,
-				Email: expectedInput.Email.String,
+				ID:              expectedInput.ID.Int64,
+				Email:           expectedInput.Email.String,
+				IsEmailVerified: true,
 			},
 		}
 
 		mock.ExpectQuery(regexp.QuoteMeta(
-			`SELECT id, email FROM users WHERE id = $1 AND email = $2`,
+			`SELECT id, is_email_verified, email FROM users WHERE id = $1 AND email = $2`,
 		)).WithArgs(expectedInput.ID.Int64, expectedInput.Email.String).WillReturnRows(sqlmock.NewRows([]string{
-			"id", "email",
+			"id", "is_email_verified", "email",
 		}).AddRow(
 			expectedOutput.Data.ID,
+			expectedOutput.Data.IsEmailVerified,
 			expectedOutput.Data.Email,
 		))
 
@@ -60,7 +62,7 @@ func Test_repository_FindOneUser(t *testing.T) {
 			Email: null.StringFrom(faker.Email()),
 		}
 		mock.ExpectQuery(regexp.QuoteMeta(
-			`SELECT id, email FROM users WHERE id = $1 AND email = $2`,
+			`SELECT id, is_email_verified, email FROM users WHERE id = $1 AND email = $2`,
 		)).WithArgs(expectedInput.ID.Int64, expectedInput.Email.String).
 			WillReturnError(wsqlx.ErrRecordNoRows)
 

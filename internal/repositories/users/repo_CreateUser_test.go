@@ -30,16 +30,18 @@ func TestRepository_CreateUser(t *testing.T) {
 		expectedID := rand.Int63()
 		expectedInput := users.CreateUserInput{
 			Payload: model.User{
-				Email:    faker.Email(),
-				Password: faker.Password(),
+				Email:           faker.Email(),
+				Password:        faker.Password(),
+				IsEmailVerified: true,
 			},
 		}
 
 		mock.ExpectQuery(regexp.QuoteMeta(
-			`INSERT INTO users (email,password,created_at,updated_at) VALUES ($1,$2,$3,$4) RETURNING id`,
+			`INSERT INTO users (email,password,is_email_verified,created_at,updated_at) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
 		)).WithArgs(
 			expectedInput.Payload.Email,
 			expectedInput.Payload.Password,
+			expectedInput.Payload.IsEmailVerified,
 			sqlmock.AnyArg(),
 			sqlmock.AnyArg(),
 		).WillReturnRows(sqlmock.NewRows([]string{

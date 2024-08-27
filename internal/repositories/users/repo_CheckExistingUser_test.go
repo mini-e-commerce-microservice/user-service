@@ -28,13 +28,14 @@ func TestRepository_CheckExistingUser(t *testing.T) {
 
 	t.Run("should be return correct", func(t *testing.T) {
 		expectedInput := users.CheckExistingUserInput{
-			ID:    null.IntFrom(rand.Int63()),
-			Email: null.StringFrom(faker.Email()),
+			ID:              null.IntFrom(rand.Int63()),
+			Email:           null.StringFrom(faker.Email()),
+			IsEmailVerified: null.BoolFrom(true),
 		}
 
 		mock.ExpectQuery(regexp.QuoteMeta(
-			`SELECT EXISTS( SELECT 1 FROM users WHERE email = $1 AND id = $2 )`,
-		)).WithArgs(expectedInput.Email.String, expectedInput.ID.Int64).WillReturnRows(
+			`SELECT EXISTS( SELECT 1 FROM users WHERE email = $1 AND id = $2 AND is_email_verified = $3 )`,
+		)).WithArgs(expectedInput.Email.String, expectedInput.ID.Int64, expectedInput.IsEmailVerified.Bool).WillReturnRows(
 			sqlmock.NewRows([]string{"exists"}).AddRow(true),
 		)
 

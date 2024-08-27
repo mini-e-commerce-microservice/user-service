@@ -25,6 +25,7 @@ type CreateUserOutput struct {
 }
 
 type CheckExistingUserInput struct {
-	ID    null.Int
-	Email null.String
+	ID              null.Int
+	Email           null.String
+	IsEmailVerified null.Bool
 }

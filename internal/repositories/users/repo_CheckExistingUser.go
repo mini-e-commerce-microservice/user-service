@@ -19,6 +19,9 @@ func (r *repository) CheckExistingUser(ctx context.Context, input CheckExistingU
 	if input.ID.Valid {
 		query = query.Where(squirrel.Eq{"id": input.ID.Int64})
 	}
+	if input.IsEmailVerified.Valid {
+		query = query.Where(squirrel.Eq{"is_email_verified": input.IsEmailVerified.Bool})
+	}
 
 	err = r.rdbms.QueryRowSq(ctx, query, wsqlx.QueryRowScanTypeDefault, &exists)
 	if err != nil {
