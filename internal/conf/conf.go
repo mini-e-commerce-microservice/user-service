@@ -18,7 +18,7 @@ func Init() {
 		return
 	}
 
-	listDir := []string{".", "../", "../../", "../../../", "../../../../"}
+	listDir := []string{".", "../", "../../", "../../../", "../../../../", "../../../../../", "../../../../../"}
 
 	for _, dir := range listDir {
 		viper.SetConfigName("env")
@@ -37,6 +37,14 @@ func Init() {
 	}
 
 	panic("cannot load env")
+}
+
+func InitForTest() {
+	fakeConf := Config{}
+	err := faker.FakeData(&fakeConf)
+	util.Panic(err)
+	conf = &fakeConf
+	return
 }
 
 func GetConfig() *Config {

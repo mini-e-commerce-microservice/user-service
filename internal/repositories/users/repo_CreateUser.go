@@ -3,11 +3,15 @@ package users
 import (
 	"context"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
+	"go.opentelemetry.io/otel"
 	"time"
 	"user-service/internal/util/tracer"
 )
 
 func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (output CreateUserOutput, err error) {
+	ctx, span := otel.Tracer("users repository").Start(ctx, "create user data")
+	defer span.End()
+
 	query := r.sq.Insert("users").Columns(
 		"email", "password", "is_email_verified", "created_at", "updated_at",
 	).Values(

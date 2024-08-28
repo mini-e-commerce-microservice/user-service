@@ -6,6 +6,13 @@ type Config struct {
 	OpenTelemetry ConfigOpenTelemetry `mapstructure:"OPEN_TELEMETRY"`
 	Minio         ConfigMinio         `mapstructure:"MINIO"`
 	DatabaseDSN   string              `mapstructure:"DATABASE_DSN"`
+	RabbitMQ      ConfigRabbitMQ      `mapstructure:"RABBIT_MQ"`
+}
+
+type ConfigRabbitMQ struct {
+	Username string `mapstructure:"USERNAME"`
+	Password string `mapstructure:"PASSWORD"`
+	Url      string `mapstructure:"URL"`
 }
 
 type ConfigOpenTelemetry struct {
