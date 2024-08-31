@@ -10,6 +10,7 @@ type RegisterUserInput struct {
 	Password        string
 	Email           string
 	FullName        string
+	RegisterAs      primitive.EnumRegisterAs
 }
 
 type RegisterUserOutput struct {

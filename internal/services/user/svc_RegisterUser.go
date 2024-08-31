@@ -103,6 +103,7 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 					Email:           input.Email,
 					Password:        string(passwordHash),
 					IsEmailVerified: false,
+					RegisterAs:      int8(input.RegisterAs),
 				},
 			})
 			if err != nil {

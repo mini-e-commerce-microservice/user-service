@@ -7,6 +7,7 @@ import (
 	"github.com/go-faker/faker/v4"
 	"github.com/jmoiron/sqlx"
 	"github.com/mini-e-commerce-microservice/user-service/internal/model"
+	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	"github.com/stretchr/testify/require"
 	"math/rand"
@@ -33,15 +34,17 @@ func TestRepository_CreateUser(t *testing.T) {
 				Email:           faker.Email(),
 				Password:        faker.Password(),
 				IsEmailVerified: true,
+				RegisterAs:      int8(primitive.EnumRegisterAsMerchant),
 			},
 		}
 
 		mock.ExpectQuery(regexp.QuoteMeta(
-			`INSERT INTO users (email,password,is_email_verified,created_at,updated_at) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
+			`INSERT INTO users (email,password,is_email_verified,register_as,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
 		)).WithArgs(
 			expectedInput.Payload.Email,
 			expectedInput.Payload.Password,
 			expectedInput.Payload.IsEmailVerified,
+			expectedInput.Payload.RegisterAs,
 			sqlmock.AnyArg(),
 			sqlmock.AnyArg(),
 		).WillReturnRows(sqlmock.NewRows([]string{

@@ -108,11 +108,20 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             validate: "required,max=100,min=6"
+        register_as:
+          type: integer
+          format: int8
+          description: |-
+            - 1 = merchant
+            - 2 = customer
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=1 2"
       required:
         - email
         - full_name
         - re_password
         - password
+        - register_as
     V1GetProfile200Response:
       type: object
       properties:
