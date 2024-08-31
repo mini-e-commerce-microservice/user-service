@@ -3,10 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gorilla/schema"
+	"github.com/mini-e-commerce-microservice/user-service/generated/api"
+	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
 	"io"
 	"net/http"
-	"user-service/generated/api"
-	"user-service/internal/primitive"
 )
 
 func (h *handler) bodyRequestBindToStruct(w http.ResponseWriter, r *http.Request, v interface{}) bool {

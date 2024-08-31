@@ -2,16 +2,16 @@ package rabbitmq_test
 
 import (
 	"bytes"
+	"github.com/mini-e-commerce-microservice/user-service/generated/proto/notification_proto"
+	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
+	"github.com/mini-e-commerce-microservice/user-service/internal/infra"
+	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/rabbitmq"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"testing"
 	"time"
-	"user-service/generated/proto/notification_proto"
-	"user-service/internal/conf"
-	"user-service/internal/infra"
-	"user-service/internal/repositories/rabbitmq"
 )
 
 func TestRepo_Publish(t *testing.T) {

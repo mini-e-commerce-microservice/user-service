@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-playground/validator/v10"
+	"github.com/mini-e-commerce-microservice/user-service/generated/api"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"net/http"
 	"strings"
-	"user-service/generated/api"
 )
 
 func getMsg(msg []string, code int) string {

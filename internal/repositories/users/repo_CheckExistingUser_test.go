@@ -7,11 +7,11 @@ import (
 	"github.com/go-faker/faker/v4"
 	"github.com/guregu/null/v5"
 	"github.com/jmoiron/sqlx"
+	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	"github.com/stretchr/testify/require"
 	"math/rand"
 	"regexp"
 	"testing"
-	"user-service/internal/repositories/users"
 )
 
 func TestRepository_CheckExistingUser(t *testing.T) {

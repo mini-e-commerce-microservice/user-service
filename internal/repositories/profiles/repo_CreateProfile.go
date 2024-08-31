@@ -1,4 +1,4 @@
-package users
+package profiles
 
 import (
 	"context"
@@ -7,13 +7,14 @@ import (
 	"time"
 )
 
-func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (output CreateUserOutput, err error) {
-	query := r.sq.Insert("users").Columns(
-		"email", "password", "is_email_verified", "created_at", "updated_at",
+func (r *repository) CreateProfile(ctx context.Context, input CreateProfileInput) (output CreateProfileOutput, err error) {
+	query := r.sq.Insert("profiles").Columns(
+		"user_id", "full_name", "image_profile", "background_image", "created_at", "updated_at",
 	).Values(
-		input.Payload.Email,
-		input.Payload.Password,
-		input.Payload.IsEmailVerified,
+		input.Payload.UserID,
+		input.Payload.FullName,
+		input.Payload.ImageProfile,
+		input.Payload.BackgroundImage,
 		time.Now().UTC(),
 		time.Now().UTC(),
 	).Suffix("RETURNING id")
@@ -27,6 +28,5 @@ func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (out
 	if err != nil {
 		return output, tracer.Error(err)
 	}
-
 	return
 }

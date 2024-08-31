@@ -3,8 +3,8 @@ package conf
 import (
 	"flag"
 	"github.com/go-faker/faker/v4"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util"
 	"github.com/spf13/viper"
-	"user-service/internal/util"
 )
 
 var conf *Config

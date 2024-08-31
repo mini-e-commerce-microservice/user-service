@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/mini-e-commerce-microservice/user-service/internal/util"
 	"github.com/spf13/cobra"
-	"user-service/internal/util"
 )
 
 func main() {

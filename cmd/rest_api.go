@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	"errors"
+	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
+	"github.com/mini-e-commerce-microservice/user-service/internal/infra"
+	"github.com/mini-e-commerce-microservice/user-service/internal/presenter"
+	"github.com/mini-e-commerce-microservice/user-service/internal/services"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"net/http"
 	"os/signal"
 	"syscall"
-	"user-service/internal/conf"
-	"user-service/internal/infra"
-	"user-service/internal/presenter"
 )
 
 var restApiCmd = &cobra.Command{
@@ -20,10 +21,15 @@ var restApiCmd = &cobra.Command{
 		conf.Init()
 
 		otel := infra.NewOtel(conf.GetConfig().OpenTelemetry)
-		_, dbClose := infra.NewPostgresql(conf.GetConfig().DatabaseDSN)
+		postgre, dbClose := infra.NewPostgresql(conf.GetConfig().DatabaseDSN)
+		minio := infra.NewMinio(conf.GetConfig().Minio)
+		_, rabbitmqCH, rabbitmqClose := infra.NewRabbitMq(conf.GetConfig().RabbitMQ)
+
+		dependency := services.NewDependency(minio, postgre, rabbitmqCH)
 
 		server := presenter.New(&presenter.Presenter{
-			Port: conf.GetConfig().AppPort,
+			Dependency: dependency,
+			Port:       conf.GetConfig().AppPort,
 		})
 
 		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -47,6 +53,10 @@ var restApiCmd = &cobra.Command{
 		}
 
 		if err := dbClose(context.TODO()); err != nil {
+			panic(err)
+		}
+
+		if err := rabbitmqClose(context.TODO()); err != nil {
 			panic(err)
 		}
 

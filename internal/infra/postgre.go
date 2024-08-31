@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util"
 	"github.com/rs/zerolog/log"
 	"time"
-	"user-service/internal/primitive"
-	"user-service/internal/util"
 )
 
 func NewPostgresql(dsn string) (*sqlx.DB, primitive.CloseFn) {

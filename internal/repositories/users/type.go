@@ -3,7 +3,7 @@ package users
 import (
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/guregu/null/v5"
-	"user-service/internal/model"
+	"github.com/mini-e-commerce-microservice/user-service/internal/model"
 )
 
 type FindOneUserInput struct {

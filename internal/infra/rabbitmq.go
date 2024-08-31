@@ -2,10 +2,10 @@ package infra
 
 import (
 	"context"
+	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
+	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
-	"user-service/internal/conf"
-	"user-service/internal/primitive"
 )
 
 func NewRabbitMq(cred conf.ConfigRabbitMQ) (*amqp.Connection, *amqp.Channel, primitive.CloseFn) {
@@ -19,6 +19,7 @@ func NewRabbitMq(cred conf.ConfigRabbitMQ) (*amqp.Connection, *amqp.Channel, pri
 		panic(err)
 	}
 
+	log.Info().Msg("initialization rabbitmq successfully")
 	return conn, ch, func(ctx context.Context) (err error) {
 		err = conn.Close()
 		if err != nil {
@@ -35,4 +36,5 @@ func NewRabbitMq(cred conf.ConfigRabbitMQ) (*amqp.Connection, *amqp.Channel, pri
 		log.Info().Msg("closed rabbitmq channel successfully")
 		return nil
 	}
+
 }

@@ -107,11 +107,12 @@ components:
         full_name:
           type: string
           x-oapi-codegen-extra-tags:
-            validate: "required,max=20,min=6"
+            validate: "required,max=100,min=6"
       required:
         - email
         - full_name
         - re_password
+        - password
     V1GetProfile200Response:
       type: object
       properties:
@@ -190,8 +191,6 @@ components:
     Error400:
       type: object
       properties:
-        request_id:
-          type: string
         errors:
           type: object
           additionalProperties:
@@ -200,15 +199,11 @@ components:
               type: string
       required:
         - errors
-        - request_id
     Error:
       type: object
       properties:
-        request_id:
-          type: string
         message:
           type: string
       required:
         - message
-        - request_id
 

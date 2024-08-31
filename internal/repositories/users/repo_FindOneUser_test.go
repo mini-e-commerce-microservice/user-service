@@ -7,13 +7,13 @@ import (
 	"github.com/go-faker/faker/v4"
 	"github.com/guregu/null/v5"
 	"github.com/jmoiron/sqlx"
+	"github.com/mini-e-commerce-microservice/user-service/internal/model"
+	"github.com/mini-e-commerce-microservice/user-service/internal/repositories"
+	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	"github.com/stretchr/testify/require"
 	"math/rand"
 	"regexp"
 	"testing"
-	"user-service/internal/model"
-	"user-service/internal/repositories"
-	"user-service/internal/repositories/users"
 )
 
 func Test_repository_FindOneUser(t *testing.T) {

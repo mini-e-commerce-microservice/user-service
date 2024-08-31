@@ -5,14 +5,15 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/mini-e-commerce-microservice/user-service/internal/presenter/handler"
+	"github.com/mini-e-commerce-microservice/user-service/internal/services"
 	"net/http"
 	"time"
-	"user-service/internal/presenter/handler"
 )
 
 type Presenter struct {
-	//DependencyService *service.Dependency
-	Port int
+	Dependency *services.Dependency
+	Port       int
 }
 
 func New(presenter *Presenter) *http.Server {
@@ -29,7 +30,7 @@ func New(presenter *Presenter) *http.Server {
 		AllowCredentials: true,
 	}))
 
-	handler.NewHandler(r)
+	handler.NewHandler(r, presenter.Dependency.UserService)
 
 	s := &http.Server{
 		Addr:              fmt.Sprintf(":%d", presenter.Port),

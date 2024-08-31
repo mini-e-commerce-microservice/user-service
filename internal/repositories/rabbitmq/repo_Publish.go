@@ -3,13 +3,13 @@ package rabbitmq
 import (
 	"context"
 	"github.com/google/uuid"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/protobuf/proto"
-	"user-service/internal/util/tracer"
 )
 
 func (r *rabbitmq) Publish(ctx context.Context, input PublishInput) (err error) {
