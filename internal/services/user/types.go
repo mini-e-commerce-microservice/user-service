@@ -1,20 +1,20 @@
 package user
 
 import (
-	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
+	primitive2 "github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 )
 
 type RegisterUserInput struct {
-	BackgroundImage *primitive.PresignedFileUpload
-	ImageProfile    *primitive.PresignedFileUpload
+	BackgroundImage *primitive2.PresignedFileUpload
+	ImageProfile    *primitive2.PresignedFileUpload
 	Password        string
 	Email           string
 	FullName        string
-	RegisterAs      primitive.EnumRegisterAs
+	RegisterAs      primitive2.EnumRegisterAs
 }
 
 type RegisterUserOutput struct {
 	UserID                            int64
-	BackgroundImagePresignedUrlUpload *primitive.PresignedFileUploadOutput
-	ImageProfilePresignedUrlUpload    *primitive.PresignedFileUploadOutput
+	BackgroundImagePresignedUrlUpload *primitive2.PresignedFileUploadOutput
+	ImageProfilePresignedUrlUpload    *primitive2.PresignedFileUploadOutput
 }

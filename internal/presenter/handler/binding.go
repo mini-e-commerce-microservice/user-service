@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/schema"
 	"github.com/mini-e-commerce-microservice/user-service/generated/api"
-	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
+	primitive2 "github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"io"
 	"net/http"
 )
@@ -31,15 +31,15 @@ func (h *handler) bodyRequestBindToStruct(w http.ResponseWriter, r *http.Request
 	return true
 }
 
-func (h *handler) bindUploadFileRequest(w http.ResponseWriter, r *http.Request, input api.FileUploadRequest) (output primitive.PresignedFileUpload, ok bool) {
-	fileUploadInput := primitive.NewPresignedFileUploadInput{
+func (h *handler) bindUploadFileRequest(w http.ResponseWriter, r *http.Request, input api.FileUploadRequest) (output primitive2.PresignedFileUpload, ok bool) {
+	fileUploadInput := primitive2.NewPresignedFileUploadInput{
 		Identifier:       input.Identifier,
 		OriginalFileName: input.OriginalFilename,
-		MimeType:         primitive.MimeType(input.MimeType),
+		MimeType:         primitive2.MimeType(input.MimeType),
 		Size:             input.Size,
 		ChecksumSHA256:   input.ChecksumSha256,
 	}
-	output, err := primitive.NewPresignedFileUpload(fileUploadInput)
+	output, err := primitive2.NewPresignedFileUpload(fileUploadInput)
 	if err != nil {
 		Error(w, r, http.StatusBadRequest, err, err.Error())
 		return output, false
@@ -47,7 +47,7 @@ func (h *handler) bindUploadFileRequest(w http.ResponseWriter, r *http.Request, 
 	return output, true
 }
 
-func (h *handler) bindUploadFileResponse(input primitive.PresignedFileUploadOutput) (output api.FileUploadResponse) {
+func (h *handler) bindUploadFileResponse(input primitive2.PresignedFileUploadOutput) (output api.FileUploadResponse) {
 	return api.FileUploadResponse{
 		Identifier:      input.Identifier,
 		UploadExpiredAt: input.UploadExpiredAt,

@@ -7,6 +7,7 @@ type Config struct {
 	Minio         ConfigMinio         `mapstructure:"MINIO"`
 	DatabaseDSN   string              `mapstructure:"DATABASE_DSN"`
 	RabbitMQ      ConfigRabbitMQ      `mapstructure:"RABBIT_MQ"`
+	Jwt           ConfigJWT           `mapstructure:"JWT"`
 }
 
 type ConfigRabbitMQ struct {
@@ -28,4 +29,8 @@ type ConfigMinio struct {
 	SecretAccessKey string `mapstructure:"SECRET_ACCESS_KEY"`
 	UseSSL          bool   `mapstructure:"USE_SSL"`
 	PrivateBucket   string `mapstructure:"PRIVATE_BUCKET"`
+}
+
+type ConfigJWT struct {
+	OtpUsecase string `mapstructure:"OTP_USECASE"`
 }

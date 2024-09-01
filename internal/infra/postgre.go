@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"github.com/rs/zerolog/log"
 	"time"
 )

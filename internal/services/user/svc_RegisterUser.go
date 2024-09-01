@@ -3,21 +3,16 @@ package user
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	s3wrapper "github.com/SyaibanAhmadRamadhan/go-s3-wrapper"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/guregu/null/v5"
-	"github.com/mini-e-commerce-microservice/user-service/generated/proto/notification_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/model"
-	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/profiles"
-	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/rabbitmq"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/sync/errgroup"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
@@ -128,23 +123,6 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 			return
 		},
 	)
-	if err != nil {
-		return output, tracer.Error(err)
-	}
-
-	err = s.rabbitmqRepository.Publish(ctx, rabbitmq.PublishInput{
-		RoutingKey: rabbitmq.RoutingKeyEmailOTP,
-		Exchange:   rabbitmq.ExchangeNameNotification,
-		Payload: &notification_proto.Notification{
-			Type: notification_proto.NotificationType_EMAIL_VERIFIED,
-			Data: &notification_proto.Notification_EmailVerified{
-				EmailVerified: &notification_proto.NotificationEmailVerifiedPayload{
-					OtpCode:   fmt.Sprintf("%d", util.GenerateOTP()),
-					ExpiredAt: timestamppb.New(time.Now().UTC().Add(6 * time.Minute)),
-				},
-			},
-		},
-	})
 	if err != nil {
 		return output, tracer.Error(err)
 	}

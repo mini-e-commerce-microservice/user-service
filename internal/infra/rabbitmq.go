@@ -3,7 +3,7 @@ package infra
 import (
 	"context"
 	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
-	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
 )

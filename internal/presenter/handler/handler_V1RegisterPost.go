@@ -3,8 +3,8 @@ package handler
 import (
 	"errors"
 	"github.com/mini-e-commerce-microservice/user-service/generated/api"
-	"github.com/mini-e-commerce-microservice/user-service/internal/primitive"
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/user"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"net/http"
 )
 

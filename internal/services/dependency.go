@@ -5,9 +5,11 @@ import (
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/jmoiron/sqlx"
 	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
+	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/otps"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/profiles"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/rabbitmq"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
+	"github.com/mini-e-commerce-microservice/user-service/internal/services/otp"
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/user"
 	"github.com/minio/minio-go/v7"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -15,6 +17,7 @@ import (
 
 type Dependency struct {
 	UserService user.Service
+	OtpService  otp.Service
 }
 
 func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient *amqp.Channel) *Dependency {
@@ -24,6 +27,7 @@ func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient *amqp.
 
 	userRepository := users.NewRepository(rdbms)
 	profileRepository := profiles.NewRepository(rdbms)
+	otpRepository := otps.NewRepository(rdbms)
 	rabbitmqRepository := rabbitmq.NewRabbitMq(rabbitmqClient)
 
 	userSvc := user.NewService(user.NewServiceOptions{
@@ -33,8 +37,15 @@ func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient *amqp.
 		RabbitmqRepository: rabbitmqRepository,
 		DBTx:               dbtx,
 	}, conf.GetConfig().Minio)
-
+	otpSvc := otp.NewService(otp.NewServiceOptions{
+		UserRepository:     userRepository,
+		RabbitmqRepository: rabbitmqRepository,
+		OtpRepository:      otpRepository,
+		DBTx:               dbtx,
+	}, conf.GetConfig().Jwt)
+	
 	return &Dependency{
 		UserService: userSvc,
+		OtpService:  otpSvc,
 	}
 }
