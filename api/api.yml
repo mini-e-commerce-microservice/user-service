@@ -71,8 +71,118 @@ paths:
                 $ref: '#/components/schemas/Error'
       tags:
         - register
+  /v1/otp:
+    post:
+      operationId: V1SendOtpPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1SendOtpPostRequestBody'
+      responses:
+        '204':
+          description: NO_CONTENT
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - otp
+    put:
+      operationId: V1VerifyOtpPut
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1VerifyOtpPutRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1VerifyOtpPutResponse'
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - otp
 components:
   schemas:
+    V1VerifyOtpPutResponse:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+    V1VerifyOtpPutRequestBody:
+      type: object
+      properties:
+        usecase:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=verify-email"
+        type:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=email"
+        code:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required"
+      required:
+        - type
+        - code
+        - usecase
+    V1SendOtpPostRequestBody:
+      type: object
+      properties:
+        usecase:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=verify-email"
+        type:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=email"
+        destination_address:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required"
+      required:
+        - type
+        - destination_address
+        - usecase
     V1RegisterPost200Response:
       type: object
       properties:

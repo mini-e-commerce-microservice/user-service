@@ -7,6 +7,7 @@ import (
 	primitive2 "github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (h *handler) bodyRequestBindToStruct(w http.ResponseWriter, r *http.Request, v interface{}) bool {
@@ -88,4 +89,16 @@ func (h *handler) queryParamBindToStruct(w http.ResponseWriter, r *http.Request,
 		return false
 	}
 	return true
+}
+
+func (h *handler) getUserID(w http.ResponseWriter, r *http.Request) (int64, bool) {
+	userIDStr := r.Header.Get("X-User-Id")
+
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		Error(w, r, http.StatusForbidden, err)
+		return 0, false
+	}
+
+	return userID, true
 }

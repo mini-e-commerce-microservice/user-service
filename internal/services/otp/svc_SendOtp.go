@@ -56,7 +56,7 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 			}
 
 			err = s.rabbitmqRepository.Publish(ctx, rabbitmq.PublishInput{
-				RoutingKey: rabbitmq.RoutingKeyEmailOTP,
+				RoutingKey: rabbitmq.RoutingKeyNotificationTypeEmail,
 				Exchange:   rabbitmq.ExchangeNameNotification,
 				Payload: &notification_proto.Notification{
 					Type: notification_proto.NotificationType_EMAIL_VERIFIED,
@@ -86,6 +86,7 @@ func (s *service) validateSendOtp(ctx context.Context, input SendOtpInput) (err 
 	if input.Type == primitive.OtpTypeEmail {
 		exists, err := s.userRepository.CheckExistingUser(ctx, users.CheckExistingUserInput{
 			Email: null.StringFrom(input.DestinationAddress),
+			ID:    null.IntFrom(input.UserID),
 		})
 		if err != nil {
 			return tracer.Error(err)

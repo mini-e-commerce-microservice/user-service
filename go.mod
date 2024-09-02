@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/SyaibanAhmadRamadhan/go-s3-wrapper v1.240901.1250
 	github.com/SyaibanAhmadRamadhan/go-s3-wrapper/minio v1.240901.1252
-	github.com/SyaibanAhmadRamadhan/http-log-wrap v1.240827.1120
+	github.com/SyaibanAhmadRamadhan/http-log-wrap v1.240827.1121-0.20240902141924-1161d3d8eec4
 	github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.240826.1115
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1

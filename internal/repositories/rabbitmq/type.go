@@ -7,7 +7,7 @@ import (
 type RoutingKey string
 
 const (
-	RoutingKeyEmailOTP RoutingKey = "notification.email.otp"
+	RoutingKeyNotificationTypeEmail RoutingKey = "notification.type.email"
 )
 
 type Exchange string

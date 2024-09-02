@@ -41,7 +41,7 @@ func (h *handler) V1RegisterPost(w http.ResponseWriter, r *http.Request) {
 		registerUserInput.ImageProfile = &imageProfileFileUpload
 	}
 
-	registerOutput, err := h.userService.RegisterUser(r.Context(), registerUserInput)
+	registerOutput, err := h.service.UserService.RegisterUser(r.Context(), registerUserInput)
 	if err != nil {
 		if errors.Is(err, user.ErrEmailAvailable) {
 			Error(w, r, http.StatusBadRequest, err, user.ErrEmailAvailable.Error())

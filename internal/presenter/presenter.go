@@ -30,7 +30,7 @@ func New(presenter *Presenter) *http.Server {
 		AllowCredentials: true,
 	}))
 
-	handler.NewHandler(r, presenter.Dependency.UserService)
+	handler.NewHandler(r, presenter.Dependency)
 
 	s := &http.Server{
 		Addr:              fmt.Sprintf(":%d", presenter.Port),

@@ -22,7 +22,7 @@ func TestRepo_Publish(t *testing.T) {
 
 	r := rabbitmq.NewRabbitMq(ch)
 	err := r.Publish(context.TODO(), rabbitmq.PublishInput{
-		RoutingKey: rabbitmq.RoutingKeyEmailOTP,
+		RoutingKey: rabbitmq.RoutingKeyNotificationTypeEmail,
 		Exchange:   rabbitmq.ExchangeNameNotification,
 		Payload: &notification_proto.Notification{
 			Type: notification_proto.NotificationType_EMAIL_VERIFIED,
