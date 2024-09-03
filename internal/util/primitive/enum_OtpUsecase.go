@@ -1,6 +1,8 @@
 package primitive
 
-import "time"
+import (
+	"time"
+)
 
 type OtpUseCase string
 

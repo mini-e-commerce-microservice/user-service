@@ -17,7 +17,10 @@ type handler struct {
 
 func NewHandler(r *chi.Mux, service *services.Dependency) {
 	r.Use(func(h http.Handler) http.Handler {
-		return httplogwrap.HttpOtel(h, "X-User-Id")
+		return httplogwrap.HttpOtel(h,
+			httplogwrap.WithExtraHeaders("X-User-Id"),
+			httplogwrap.WithOutSetRequestIDHeader(),
+		)
 	})
 
 	v := validator.New()

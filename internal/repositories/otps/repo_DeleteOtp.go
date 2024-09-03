@@ -29,6 +29,10 @@ func (r *repository) DeleteOtp(ctx context.Context, input DeleteOtpInput) (err e
 		query = query.Where(squirrel.GtOrEq{"expired": input.ExpiredGTE})
 	}
 
+	if input.TokenIsNil {
+		query = query.Where(squirrel.Eq{"token": nil})
+	}
+
 	rdbms := r.rdbms
 	if input.Tx != nil {
 		rdbms = input.Tx

@@ -15,24 +15,21 @@ func (h *handler) V1VerifyOtpPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, ok := h.getUserID(w, r)
-	if !ok {
-		return
-	}
-
 	verifyOutput, err := h.service.OtpService.VerifyOtp(r.Context(), otp.VerifyOtpInput{
-		Usecase: primitive.OtpUseCase(req.Usecase),
-		Type:    primitive.OtpType(req.Type),
-		Code:    req.Code,
-		UserID:  userID,
+		Usecase:            primitive.OtpUseCase(req.Usecase),
+		Type:               primitive.OtpType(req.Type),
+		Code:               req.Code,
+		DestinationAddress: req.DestinationAddress,
 	})
 	if err != nil {
 		if errors.Is(err, otp.ErrOtpExpired) {
 			Error(w, r, http.StatusBadRequest, err, otp.ErrOtpExpired.Error())
 		} else if errors.Is(err, otp.ErrOtpCounterExceeded) {
 			Error(w, r, http.StatusBadRequest, err, otp.ErrOtpCounterExceeded.Error())
-		} else if errors.Is(err, otp.ErrCodeOtpInvalid) {
+		} else if errors.Is(err, otp.ErrCodeOtpInvalid) || errors.Is(err, otp.ErrOtpNotFound) {
 			Error(w, r, http.StatusBadRequest, err, otp.ErrCodeOtpInvalid.Error())
+		} else if errors.Is(err, otp.ErrDestinationAddressNotFound) {
+			Error(w, r, http.StatusBadRequest, err, otp.ErrDestinationAddressNotFound.Error())
 		} else {
 			Error(w, r, http.StatusInternalServerError, err)
 		}

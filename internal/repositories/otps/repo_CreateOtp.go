@@ -16,7 +16,7 @@ func (r *repository) CreateOtp(ctx context.Context, input CreateOtpInput) (outpu
 		input.Payload.Type,
 		input.Payload.Counter,
 		input.Payload.Expired,
-	)
+	).Suffix("RETURNING id")
 
 	rdbms := r.rdbms
 	if input.Tx != nil {
@@ -27,6 +27,6 @@ func (r *repository) CreateOtp(ctx context.Context, input CreateOtpInput) (outpu
 	if err != nil {
 		return output, tracer.Error(err)
 	}
-	
+
 	return
 }

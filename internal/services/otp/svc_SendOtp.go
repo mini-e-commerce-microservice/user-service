@@ -3,11 +3,13 @@ package otp
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/guregu/null/v5"
 	"github.com/mini-e-commerce-microservice/user-service/generated/proto/notification_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/model"
+	"github.com/mini-e-commerce-microservice/user-service/internal/repositories"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/otps"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/rabbitmq"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
@@ -19,7 +21,7 @@ import (
 )
 
 func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
-	err = s.validateSendOtp(ctx, input)
+	userOutput, err := s.validateExistingUser(ctx, input.Type, input.DestinationAddress)
 	if err != nil {
 		return tracer.Error(err)
 	}
@@ -28,10 +30,11 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 		func(tx wsqlx.Rdbms) (err error) {
 			err = s.otpRepository.DeleteOtp(ctx, otps.DeleteOtpInput{
 				Tx:         tx,
-				UserID:     null.IntFrom(input.UserID),
+				UserID:     null.IntFrom(userOutput.Data.ID),
 				Usecase:    null.StringFrom(string(input.Usecase)),
 				Type:       null.StringFrom(string(input.Type)),
 				ExpiredGTE: null.TimeFrom(time.Now().UTC()),
+				TokenIsNil: true,
 			})
 			if err != nil {
 				return tracer.Error(err)
@@ -40,10 +43,11 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 			expiredOtp := time.Now().UTC().Add(input.Usecase.GetTTL())
 			otpCode := util.GenerateOTP()
 
+			fmt.Println(otpCode)
 			_, err = s.otpRepository.CreateOtp(ctx, otps.CreateOtpInput{
 				Tx: tx,
 				Payload: model.Otp{
-					UserID:  input.UserID,
+					UserID:  userOutput.Data.ID,
 					Usecase: string(input.Usecase),
 					Code:    fmt.Sprintf("%d", otpCode),
 					Type:    string(input.Type),
@@ -82,18 +86,17 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 	return
 }
 
-func (s *service) validateSendOtp(ctx context.Context, input SendOtpInput) (err error) {
-	if input.Type == primitive.OtpTypeEmail {
-		exists, err := s.userRepository.CheckExistingUser(ctx, users.CheckExistingUserInput{
-			Email: null.StringFrom(input.DestinationAddress),
-			ID:    null.IntFrom(input.UserID),
+func (s *service) validateExistingUser(ctx context.Context, otpType primitive.OtpType, destinationAddr string) (userOutput users.FindOneUserOutput, err error) {
+	if otpType == primitive.OtpTypeEmail {
+		userOutput, err = s.userRepository.FindOneUser(ctx, users.FindOneUserInput{
+			Email: null.StringFrom(destinationAddr),
 		})
 		if err != nil {
-			return tracer.Error(err)
-		}
-
-		if !exists {
-			return tracer.Error(fmt.Errorf("%w: %s", ErrDestinationAddressNotFound, input.DestinationAddress))
+			if errors.Is(err, repositories.ErrRecordNotFound) {
+				err = fmt.Errorf("%w: %s", ErrDestinationAddressNotFound, destinationAddr)
+				return userOutput, tracer.Error(err)
+			}
+			return userOutput, tracer.Error(err)
 		}
 	}
 

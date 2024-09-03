@@ -33,6 +33,7 @@ type DeleteOtpInput struct {
 	Usecase    null.String
 	Type       null.String
 	ExpiredGTE null.Time
+	TokenIsNil bool
 }
 
 type FindOneOtpInput struct {
@@ -42,6 +43,7 @@ type FindOneOtpInput struct {
 	Usecase    null.String
 	Type       null.String
 	ExpiredGTE null.Time
+	TokenIsNil bool
 }
 
 type FindOneOtpOutput struct {

@@ -15,14 +15,8 @@ func (h *handler) V1SendOtpPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, ok := h.getUserID(w, r)
-	if !ok {
-		return
-	}
-
 	err := h.service.OtpService.SendOtp(r.Context(), otp.SendOtpInput{
 		Usecase:            primitive.OtpUseCase(req.Usecase),
-		UserID:             userID,
 		Type:               primitive.OtpType(req.Type),
 		DestinationAddress: req.DestinationAddress,
 	})

@@ -15,3 +15,9 @@ The **User Service** is a core component of the platform, responsible for managi
 
 ## table erd
 ![diagram erd](docs/users-service-db.png)
+
+## need api feature
+1. forgot password
+2. update profile
+3. change email
+4. change password

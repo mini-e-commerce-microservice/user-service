@@ -12,10 +12,16 @@ import (
 )
 
 func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output VerifyOtpOutput, err error) {
+	userOutput, err := s.validateExistingUser(ctx, input.Type, input.DestinationAddress)
+	if err != nil {
+		return output, tracer.Error(err)
+	}
+
 	otpOutput, err := s.otpRepository.FindOneOtp(ctx, otps.FindOneOtpInput{
-		UserID:  null.IntFrom(input.UserID),
-		Usecase: null.StringFrom(string(input.Usecase)),
-		Type:    null.StringFrom(string(input.Type)),
+		UserID:     null.IntFrom(userOutput.Data.ID),
+		Usecase:    null.StringFrom(string(input.Usecase)),
+		Type:       null.StringFrom(string(input.Type)),
+		TokenIsNil: true,
 	})
 	if err != nil {
 		if errors.Is(err, repositories.ErrRecordNotFound) {
@@ -24,7 +30,7 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 		return output, tracer.Error(err)
 	}
 
-	if otpOutput.Data.Expired.After(time.Now().UTC()) {
+	if otpOutput.Data.Expired.Before(time.Now().UTC()) {
 		return output, tracer.Error(ErrOtpExpired)
 	}
 	if otpOutput.Data.Counter >= input.Usecase.GetLimitRetry() {
@@ -41,7 +47,7 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 		counter = null.Int16From(otpOutput.Data.Counter + 1)
 	} else {
 		tokenStr, err = jwt_util.GenerateHS256(jwt_util.Jwt{
-			UserID: input.UserID,
+			UserID: userOutput.Data.ID,
 			Key:    s.jwtKey,
 			Exp:    input.Usecase.GetTTL(),
 		})

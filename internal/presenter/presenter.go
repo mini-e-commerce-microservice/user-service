@@ -25,7 +25,7 @@ func New(presenter *Presenter) *http.Server {
 	r.Use(middleware.Timeout(30 * time.Second))
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3002"},
-		AllowedHeaders:   []string{"Origin", "Test", "Content-Type", "Accept", "X-Request-Id", "Authorization"},
+		AllowedHeaders:   []string{"Origin", "Content-Type", "Accept", "X-User-Id", "X-Request-Id", "X-Correlation-Id", "Authorization"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowCredentials: true,
 	}))

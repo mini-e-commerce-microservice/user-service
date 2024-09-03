@@ -2,7 +2,7 @@ package rabbitmq
 
 import (
 	"context"
-	"github.com/google/uuid"
+	httplogwrap "github.com/SyaibanAhmadRamadhan/http-log-wrap"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.opentelemetry.io/otel"
@@ -13,7 +13,7 @@ import (
 )
 
 func (r *rabbitmq) Publish(ctx context.Context, input PublishInput) (err error) {
-	correlationID := uuid.New().String()
+	correlationID := httplogwrap.GetCorrelationID(ctx)
 	ctx, span := otel.Tracer("rabbitmq").Start(ctx, "publish message", trace.WithAttributes(
 		attribute.String("rabbitmq.correlation_id", correlationID),
 		attribute.String("rabbitmq.exchange", string(input.Exchange)),
@@ -35,7 +35,7 @@ func (r *rabbitmq) Publish(ctx context.Context, input PublishInput) (err error) 
 		true,
 		false,
 		amqp.Publishing{
-			CorrelationId: uuid.New().String(),
+			CorrelationId: correlationID,
 			ContentType:   "application/protobuf",
 			Body:          body,
 		},

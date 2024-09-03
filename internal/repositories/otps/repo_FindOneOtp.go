@@ -38,6 +38,10 @@ func (r *repository) FindOneOtp(ctx context.Context, input FindOneOtpInput) (out
 		query = query.Where(squirrel.Eq{"code": input.Code.String})
 	}
 
+	if input.TokenIsNil {
+		query = query.Where(squirrel.Eq{"token": nil})
+	}
+
 	err = r.rdbms.QueryRowSq(ctx, query, wsqlx.QueryRowScanTypeStruct, &output.Data)
 	if err != nil {
 		if errors.Is(err, wsqlx.ErrRecordNoRows) {

@@ -9,6 +9,7 @@ paths:
   /v1/profile:
     get:
       operationId: V1GetProfile
+      description: needed auth
       responses:
         '200':
           description: OK
@@ -148,6 +149,10 @@ components:
     V1VerifyOtpPutRequestBody:
       type: object
       properties:
+        destination_address:
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "required"
         usecase:
           type: string
           x-oapi-codegen-extra-tags:
@@ -164,6 +169,7 @@ components:
         - type
         - code
         - usecase
+        - destination_address
     V1SendOtpPostRequestBody:
       type: object
       properties:
