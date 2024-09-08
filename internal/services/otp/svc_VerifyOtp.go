@@ -4,10 +4,14 @@ import (
 	"context"
 	"errors"
 	"github.com/guregu/null/v5"
+	"github.com/mini-e-commerce-microservice/user-service/generated/proto/otp_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/otps"
+	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	jwt_util "github.com/mini-e-commerce-microservice/user-service/internal/util/jwt"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
+	"google.golang.org/protobuf/proto"
 	"time"
 )
 
@@ -25,7 +29,7 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 	})
 	if err != nil {
 		if errors.Is(err, repositories.ErrRecordNotFound) {
-			err = ErrOtpNotFound
+			err = errors.Join(err, ErrOtpNotFound)
 		}
 		return output, tracer.Error(err)
 	}
@@ -46,11 +50,7 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 		errOtp = ErrCodeOtpInvalid
 		counter = null.Int16From(otpOutput.Data.Counter + 1)
 	} else {
-		tokenStr, err = jwt_util.GenerateHS256(jwt_util.Jwt{
-			UserID: userOutput.Data.ID,
-			Key:    s.jwtKey,
-			Exp:    input.Usecase.GetTTL(),
-		})
+		tokenStr, err = s.generateTokenOTP(input, userOutput)
 		if err != nil {
 			return output, tracer.Error(err)
 		}
@@ -77,4 +77,37 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 		Token: tokenStr,
 	}
 	return
+}
+
+func (s *service) generateTokenOTP(input VerifyOtpInput, user users.FindOneUserOutput) (string, error) {
+	payloadProto := &otp_proto.OTP{}
+
+	if input.Usecase == primitive.OtpUseCaseVerifyEmail {
+		payloadProto = &otp_proto.OTP{
+			Payload: &otp_proto.OTP_UserVerifyEmail{
+				UserVerifyEmail: &otp_proto.OtpUserVerifyEmailPayload{
+					UserId:     user.Data.ID,
+					Email:      user.Data.Email,
+					IsVerified: true,
+				},
+			},
+		}
+	}
+
+	body, err := proto.Marshal(payloadProto)
+	if err != nil {
+		return "", tracer.Error(err)
+	}
+
+	tokenStr, err := jwt_util.GenerateHS256(jwt_util.Jwt{
+		UserID:  user.Data.ID,
+		Key:     s.jwtKey,
+		Payload: string(body),
+		Exp:     input.Usecase.GetTTL(),
+	})
+	if err != nil {
+		return "", tracer.Error(err)
+	}
+
+	return tokenStr, nil
 }

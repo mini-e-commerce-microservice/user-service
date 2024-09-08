@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/mini-e-commerce-microservice/user-service/generated/api"
 	"go.opentelemetry.io/otel"
@@ -21,10 +22,9 @@ func getMsg(msg []string, code int) string {
 }
 
 func Error(w http.ResponseWriter, r *http.Request, code int, err error, msg ...string) {
-	ctx, span := otel.Tracer("error").Start(r.Context(), "error record")
+	ctx, span := otel.Tracer("error").Start(r.Context(), fmt.Sprintf("error code: %d", code))
 	defer span.End()
-	span.SetAttributes(attribute.String("error-from-server", err.Error()))
-	span.SetAttributes(attribute.Int("http-code", code))
+	span.SetAttributes(attribute.String("error.server", err.Error()))
 
 	r = r.WithContext(ctx)
 	w.Header().Set("Content-Type", "application/json")
@@ -81,7 +81,7 @@ func Error(w http.ResponseWriter, r *http.Request, code int, err error, msg ...s
 		}
 	}
 
-	span.SetAttributes(attribute.String("error-response", string(errMsgByte)))
+	span.SetAttributes(attribute.String("error.response", string(errMsgByte)))
 	w.Write(errMsgByte)
 }
 

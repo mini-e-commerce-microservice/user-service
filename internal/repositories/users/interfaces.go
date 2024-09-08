@@ -7,5 +7,7 @@ type Repository interface {
 
 	// CheckExistingUser if return true, data available
 	CheckExistingUser(ctx context.Context, input CheckExistingUserInput) (exists bool, err error)
+
 	CreateUser(ctx context.Context, input CreateUserInput) (output CreateUserOutput, err error)
+	UpdateUser(ctx context.Context, input UpdateUserInput) (err error)
 }

@@ -7,9 +7,10 @@ import (
 )
 
 type Jwt struct {
-	UserID int64
-	Key    string
-	Exp    time.Duration
+	UserID  int64
+	Key     string
+	Exp     time.Duration
+	Payload string
 }
 
 func GenerateHS256(jwtModel Jwt) (string, error) {
@@ -17,8 +18,9 @@ func GenerateHS256(jwtModel Jwt) (string, error) {
 	timeExp := timeNow.Add(jwtModel.Exp).Unix()
 
 	tokenParse := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp": timeExp,
-		"sub": jwtModel.UserID,
+		"exp":     timeExp,
+		"sub":     jwtModel.UserID,
+		"payload": jwtModel.Payload,
 	})
 
 	tokenStr, err := tokenParse.SignedString([]byte(jwtModel.Key))

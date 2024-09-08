@@ -26,10 +26,8 @@ func (h *handler) V1VerifyOtpPut(w http.ResponseWriter, r *http.Request) {
 			Error(w, r, http.StatusBadRequest, err, otp.ErrOtpExpired.Error())
 		} else if errors.Is(err, otp.ErrOtpCounterExceeded) {
 			Error(w, r, http.StatusBadRequest, err, otp.ErrOtpCounterExceeded.Error())
-		} else if errors.Is(err, otp.ErrCodeOtpInvalid) || errors.Is(err, otp.ErrOtpNotFound) {
+		} else if errors.Is(err, otp.ErrCodeOtpInvalid) || errors.Is(err, otp.ErrOtpNotFound) || errors.Is(err, otp.ErrDestinationAddressNotFound) {
 			Error(w, r, http.StatusBadRequest, err, otp.ErrCodeOtpInvalid.Error())
-		} else if errors.Is(err, otp.ErrDestinationAddressNotFound) {
-			Error(w, r, http.StatusBadRequest, err, otp.ErrDestinationAddressNotFound.Error())
 		} else {
 			Error(w, r, http.StatusInternalServerError, err)
 		}

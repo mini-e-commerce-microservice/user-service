@@ -10,7 +10,7 @@ import (
 )
 
 func (r *repository) FindOneUser(ctx context.Context, input FindOneUserInput) (output FindOneUserOutput, err error) {
-	query := r.sq.Select("id", "is_email_verified", "email").From("users")
+	query := r.sq.Select("id", "is_email_verified", "email", "password", "created_at", "register_as").From("users")
 	if input.ID.Valid {
 		query = query.Where(squirrel.Eq{"id": input.ID.Int64})
 	}

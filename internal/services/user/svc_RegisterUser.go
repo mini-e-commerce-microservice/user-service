@@ -132,7 +132,6 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 
 func (s *service) validateRegisterUser(ctx context.Context, input RegisterUserInput) (err error) {
 	exists, err := s.userRepository.CheckExistingUser(ctx, users.CheckExistingUserInput{
-		ID:    null.Int{},
 		Email: null.StringFrom(input.Email),
 	})
 	if err != nil {

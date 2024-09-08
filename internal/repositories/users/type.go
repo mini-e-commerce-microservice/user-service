@@ -29,3 +29,15 @@ type CheckExistingUserInput struct {
 	Email           null.String
 	IsEmailVerified null.Bool
 }
+
+type UpdateUserInput struct {
+	Tx      wsqlx.Rdbms
+	ID      null.Int
+	Email   null.String
+	Payload UpdateUserInputPayload
+}
+
+type UpdateUserInputPayload struct {
+	IsEmailVerified null.Bool
+	Password        null.String
+}
