@@ -32,5 +32,5 @@ type ConfigMinio struct {
 }
 
 type ConfigJWT struct {
-	OtpUsecase string `mapstructure:"OTP_USECASE"`
+	KeyOtpUsecase string `mapstructure:"KEY_OTP_USECASE"`
 }

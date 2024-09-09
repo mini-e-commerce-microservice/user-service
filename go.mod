@@ -5,8 +5,6 @@ go 1.22.5
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/SyaibanAhmadRamadhan/go-s3-wrapper v1.240901.1250
-	github.com/SyaibanAhmadRamadhan/go-s3-wrapper/minio v1.240901.1252
 	github.com/SyaibanAhmadRamadhan/http-log-wrap v1.240903.1054
 	github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.240826.1115
 	github.com/go-chi/chi/v5 v5.1.0
@@ -38,6 +36,8 @@ require (
 )
 
 require (
+	github.com/SyaibanAhmadRamadhan/go-s3-wrapper v1.240910.1043 // indirect
+	github.com/SyaibanAhmadRamadhan/go-s3-wrapper/minio v1.240910.1052 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect

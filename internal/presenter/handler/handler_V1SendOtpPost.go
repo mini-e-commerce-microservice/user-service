@@ -23,6 +23,8 @@ func (h *handler) V1SendOtpPost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, otp.ErrDestinationAddressNotFound) {
 			Error(w, r, http.StatusBadRequest, err, otp.ErrDestinationAddressNotFound.Error())
+		} else if errors.Is(err, otp.ErrEmailUserIsVerified) {
+			Error(w, r, http.StatusBadRequest, err, otp.ErrEmailUserIsVerified.Error())
 		} else {
 			Error(w, r, http.StatusInternalServerError, err)
 		}

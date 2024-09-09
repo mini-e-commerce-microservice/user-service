@@ -37,6 +37,35 @@ paths:
                 $ref: '#/components/schemas/Error'
       tags:
         - profile
+  /v1/verify-email-user:
+    put:
+      operationId: V1VerifyEmailUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1VerifyEmailUserRequestBody'
+      responses:
+        '204':
+          description: NO CONTENT (SUCCESSFULLY VERIFY USER)
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /v1/register:
     post:
       operationId: V1RegisterPost
@@ -139,6 +168,14 @@ paths:
         - otp
 components:
   schemas:
+    V1VerifyEmailUserRequestBody:
+      type: object
+      properties:
+        token:
+          type: string
+          description: you can get when verify otp token
+      required:
+        - token
     V1VerifyOtpPutResponse:
       type: object
       properties:

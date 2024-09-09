@@ -29,6 +29,6 @@ func NewService(opts NewServiceOptions, cred conf.ConfigJWT) *service {
 		otpRepository:      opts.OtpRepository,
 		rabbitmqRepository: opts.RabbitmqRepository,
 		dbTx:               opts.DBTx,
-		jwtKey:             cred.OtpUsecase,
+		jwtKey:             cred.KeyOtpUsecase,
 	}
 }

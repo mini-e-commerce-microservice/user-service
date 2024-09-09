@@ -18,3 +18,7 @@ type RegisterUserOutput struct {
 	BackgroundImagePresignedUrlUpload *primitive2.PresignedFileUploadOutput
 	ImageProfilePresignedUrlUpload    *primitive2.PresignedFileUploadOutput
 }
+
+type ActivationEmailUserInput struct {
+	Token string
+}

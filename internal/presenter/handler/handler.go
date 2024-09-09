@@ -49,4 +49,8 @@ func (h *handler) route() {
 	h.r.Put("/api/v1/otp", httplogwrap.TraceHttpOtel(
 		h.V1VerifyOtpPut,
 	))
+
+	h.r.Put("/api/v1/verify-email-user", httplogwrap.TraceHttpOtel(
+		h.V1VerifyEmailUser,
+	))
 }

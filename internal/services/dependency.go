@@ -36,14 +36,16 @@ func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient *amqp.
 		ProfileRepository:  profileRepository,
 		RabbitmqRepository: rabbitmqRepository,
 		DBTx:               dbtx,
-	}, conf.GetConfig().Minio)
+		MinioConfig:        conf.GetConfig().Minio,
+		JwtConfig:          conf.GetConfig().Jwt,
+	})
 	otpSvc := otp.NewService(otp.NewServiceOptions{
 		UserRepository:     userRepository,
 		RabbitmqRepository: rabbitmqRepository,
 		OtpRepository:      otpRepository,
 		DBTx:               dbtx,
 	}, conf.GetConfig().Jwt)
-	
+
 	return &Dependency{
 		UserService: userSvc,
 		OtpService:  otpSvc,

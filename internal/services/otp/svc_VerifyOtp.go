@@ -18,7 +18,10 @@ import (
 func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output VerifyOtpOutput, err error) {
 	userOutput, err := s.validateExistingUser(ctx, input.Type, input.DestinationAddress)
 	if err != nil {
-		return output, tracer.Error(err)
+		if !errors.Is(err, ErrEmailUserIsVerified) {
+			return output, tracer.Error(err)
+		}
+		err = nil
 	}
 
 	otpOutput, err := s.otpRepository.FindOneOtp(ctx, otps.FindOneOtpInput{
@@ -100,7 +103,6 @@ func (s *service) generateTokenOTP(input VerifyOtpInput, user users.FindOneUserO
 	}
 
 	tokenStr, err := jwt_util.GenerateHS256(jwt_util.Jwt{
-		UserID:  user.Data.ID,
 		Key:     s.jwtKey,
 		Payload: string(body),
 		Exp:     input.Usecase.GetTTL(),

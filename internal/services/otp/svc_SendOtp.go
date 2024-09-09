@@ -43,6 +43,7 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 			expiredOtp := time.Now().UTC().Add(input.Usecase.GetTTL())
 			otpCode := util.GenerateOTP()
 
+			fmt.Println(otpCode)
 			_, err = s.otpRepository.CreateOtp(ctx, otps.CreateOtpInput{
 				Tx: tx,
 				Payload: model.Otp{
@@ -96,6 +97,9 @@ func (s *service) validateExistingUser(ctx context.Context, otpType primitive.Ot
 				return userOutput, tracer.Error(err)
 			}
 			return userOutput, tracer.Error(err)
+		}
+		if userOutput.Data.IsEmailVerified {
+			return userOutput, tracer.Error(ErrEmailUserIsVerified)
 		}
 	}
 

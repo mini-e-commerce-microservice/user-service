@@ -16,6 +16,7 @@ type service struct {
 	rabbitmqRepository rabbitmq.Repository
 	dbTx               wsqlx.Tx
 	bucketName         string
+	keyJwtOtp          string
 }
 
 type NewServiceOptions struct {
@@ -24,15 +25,18 @@ type NewServiceOptions struct {
 	ProfileRepository  profiles.Repository
 	RabbitmqRepository rabbitmq.Repository
 	DBTx               wsqlx.Tx
+	MinioConfig        conf.ConfigMinio
+	JwtConfig          conf.ConfigJWT
 }
 
-func NewService(opts NewServiceOptions, cred conf.ConfigMinio) *service {
+func NewService(opts NewServiceOptions) *service {
 	return &service{
 		s3:                 opts.S3,
 		userRepository:     opts.UserRepository,
 		profileRepository:  opts.ProfileRepository,
 		rabbitmqRepository: opts.RabbitmqRepository,
 		dbTx:               opts.DBTx,
-		bucketName:         cred.PrivateBucket,
+		bucketName:         opts.MinioConfig.PrivateBucket,
+		keyJwtOtp:          opts.JwtConfig.KeyOtpUsecase,
 	}
 }
