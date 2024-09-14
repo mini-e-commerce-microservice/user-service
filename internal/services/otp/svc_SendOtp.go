@@ -33,7 +33,6 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 				UserID:     null.IntFrom(userOutput.Data.ID),
 				Usecase:    null.StringFrom(string(input.Usecase)),
 				Type:       null.StringFrom(string(input.Type)),
-				ExpiredGTE: null.TimeFrom(time.Now().UTC()),
 				TokenIsNil: true,
 			})
 			if err != nil {
@@ -43,7 +42,6 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 			expiredOtp := time.Now().UTC().Add(input.Usecase.GetTTL())
 			otpCode := util.GenerateOTP()
 
-			fmt.Println(otpCode)
 			_, err = s.otpRepository.CreateOtp(ctx, otps.CreateOtpInput{
 				Tx: tx,
 				Payload: model.Otp{
@@ -63,11 +61,13 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 				RoutingKey: rabbitmq.RoutingKeyNotificationTypeEmail,
 				Exchange:   rabbitmq.ExchangeNameNotification,
 				Payload: &notification_proto.Notification{
-					Type: notification_proto.NotificationType_EMAIL_VERIFIED,
-					Data: &notification_proto.Notification_EmailVerified{
-						EmailVerified: &notification_proto.NotificationEmailVerifiedPayload{
-							OtpCode:   fmt.Sprintf("%d", otpCode),
-							ExpiredAt: timestamppb.New(expiredOtp),
+					Type: notification_proto.NotificationType_ACTIVATION_EMAIL,
+					Data: &notification_proto.Notification_ActivationEmail{
+						ActivationEmail: &notification_proto.NotificationActivationEmailPayload{
+							OtpCode:        fmt.Sprintf("%d", otpCode),
+							RecipientEmail: userOutput.Data.Email,
+							RecipientName:  userOutput.Data.Email,
+							ExpiredAt:      timestamppb.New(expiredOtp),
 						},
 					},
 				},

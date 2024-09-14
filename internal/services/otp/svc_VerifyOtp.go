@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/guregu/null/v5"
-	"github.com/mini-e-commerce-microservice/user-service/generated/proto/otp_proto"
+	"github.com/mini-e-commerce-microservice/user-service/generated/proto/jwt_payload_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/otps"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
@@ -83,12 +83,12 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 }
 
 func (s *service) generateTokenOTP(input VerifyOtpInput, user users.FindOneUserOutput) (string, error) {
-	payloadProto := &otp_proto.OTP{}
+	payloadProto := &jwt_payload_proto.JwtPayload{}
 
 	if input.Usecase == primitive.OtpUseCaseVerifyEmail {
-		payloadProto = &otp_proto.OTP{
-			Payload: &otp_proto.OTP_UserVerifyEmail{
-				UserVerifyEmail: &otp_proto.OtpUserVerifyEmailPayload{
+		payloadProto = &jwt_payload_proto.JwtPayload{
+			Data: &jwt_payload_proto.JwtPayload_OtpActivationEmail{
+				OtpActivationEmail: &jwt_payload_proto.JwtPayloadDataOtpActivationEmail{
 					UserId:     user.Data.ID,
 					Email:      user.Data.Email,
 					IsVerified: true,

@@ -7,17 +7,19 @@ option go_package = "generated/proto/notification_proto";
 import "google/protobuf/timestamp.proto";
 
 enum NotificationType {
-  EMAIL_VERIFIED = 0;
+  ACTIVATION_EMAIL = 0;
 }
 
-message NotificationEmailVerifiedPayload {
+message NotificationActivationEmailPayload {
   string otp_code = 1;
-  google.protobuf.Timestamp expired_at = 2;
+  string recipient_email = 2;
+  string recipient_name = 3;
+  google.protobuf.Timestamp expired_at = 4;
 }
 
 message Notification {
   NotificationType type = 1;
   oneof data {
-    NotificationEmailVerifiedPayload email_verified = 2;
+    NotificationActivationEmailPayload activation_email = 2;
   }
 }
