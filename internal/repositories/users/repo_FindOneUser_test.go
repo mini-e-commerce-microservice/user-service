@@ -2,6 +2,7 @@ package users_test
 
 import (
 	"context"
+	"database/sql"
 	"github.com/DATA-DOG/go-sqlmock"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/go-faker/faker/v4"
@@ -64,7 +65,7 @@ func Test_repository_FindOneUser(t *testing.T) {
 		mock.ExpectQuery(regexp.QuoteMeta(
 			`SELECT id, is_email_verified, email FROM users WHERE id = $1 AND email = $2`,
 		)).WithArgs(expectedInput.ID.Int64, expectedInput.Email.String).
-			WillReturnError(wsqlx.ErrRecordNoRows)
+			WillReturnError(sql.ErrNoRows)
 
 		_, err = r.FindOneUser(ctx, expectedInput)
 		require.ErrorIs(t, err, repositories.ErrRecordNotFound)

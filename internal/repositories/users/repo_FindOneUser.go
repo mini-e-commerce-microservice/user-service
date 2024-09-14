@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"github.com/Masterminds/squirrel"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
@@ -20,7 +21,7 @@ func (r *repository) FindOneUser(ctx context.Context, input FindOneUserInput) (o
 
 	err = r.rdbms.QueryRowSq(ctx, query, wsqlx.QueryRowScanTypeStruct, &output.Data)
 	if err != nil {
-		if errors.Is(err, wsqlx.ErrRecordNoRows) {
+		if errors.Is(err, sql.ErrNoRows) {
 			err = repositories.ErrRecordNotFound
 		}
 

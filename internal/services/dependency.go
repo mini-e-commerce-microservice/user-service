@@ -1,6 +1,7 @@
 package services
 
 import (
+	erabbitmq "github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq"
 	s3_wrapper_minio "github.com/SyaibanAhmadRamadhan/go-s3-wrapper/minio"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/jmoiron/sqlx"
@@ -12,7 +13,6 @@ import (
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/otp"
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/user"
 	"github.com/minio/minio-go/v7"
-	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Dependency struct {
@@ -20,7 +20,7 @@ type Dependency struct {
 	OtpService  otp.Service
 }
 
-func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient *amqp.Channel) *Dependency {
+func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient erabbitmq.RabbitMQPubSub) *Dependency {
 	s3 := s3_wrapper_minio.New(minioClient)
 	rdbms := wsqlx.NewRdbms(db)
 	dbtx := wsqlx.NewSqlxTransaction(db)

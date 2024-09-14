@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	erabbitmq "github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq"
 	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
 	"github.com/mini-e-commerce-microservice/user-service/internal/infra"
 	"github.com/mini-e-commerce-microservice/user-service/internal/presenter"
@@ -23,9 +24,11 @@ var restApiCmd = &cobra.Command{
 		otel := infra.NewOtel(conf.GetConfig().OpenTelemetry)
 		postgre, dbClose := infra.NewPostgresql(conf.GetConfig().DatabaseDSN)
 		minio := infra.NewMinio(conf.GetConfig().Minio)
-		_, rabbitmqCH, rabbitmqClose := infra.NewRabbitMq(conf.GetConfig().RabbitMQ)
 
-		dependency := services.NewDependency(minio, postgre, rabbitmqCH)
+		rabbitMqUrl := conf.GetConfig().RabbitMQ.Url
+		rabbitmq := erabbitmq.New(rabbitMqUrl, erabbitmq.WithOtel(rabbitMqUrl))
+
+		dependency := services.NewDependency(minio, postgre, rabbitmq)
 
 		server := presenter.New(&presenter.Presenter{
 			Dependency: dependency,
@@ -56,9 +59,7 @@ var restApiCmd = &cobra.Command{
 			panic(err)
 		}
 
-		if err := rabbitmqClose(context.TODO()); err != nil {
-			panic(err)
-		}
+		rabbitmq.Close()
 
 		log.Info().Msg("Shutdown complete. Exiting.")
 		return

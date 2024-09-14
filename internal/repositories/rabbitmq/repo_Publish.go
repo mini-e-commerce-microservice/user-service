@@ -2,14 +2,11 @@ package rabbitmq
 
 import (
 	"context"
+	erabbitmq "github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq"
 	httplogwrap "github.com/SyaibanAhmadRamadhan/http-log-wrap"
 	"github.com/google/uuid"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -17,37 +14,32 @@ func (r *rabbitmq) Publish(ctx context.Context, input PublishInput) (err error) 
 	correlationID := httplogwrap.GetCorrelationID(ctx)
 	messageID := uuid.New().String()
 
-	ctx, span := otel.Tracer("rabbitmq").Start(ctx, "publish message", trace.WithAttributes(
-		attribute.String("rabbitmq.message_id", messageID),
-		attribute.String("rabbitmq.correlation_id", correlationID),
-		attribute.String("rabbitmq.exchange", string(input.Exchange)),
-		attribute.String("rabbitmq.routing_key", string(input.RoutingKey)),
-	))
-	defer span.End()
-
 	body, err := proto.Marshal(input.Payload)
 	if err != nil {
-		span.RecordError(err)
-		span.SetStatus(codes.Error, err.Error())
 		return tracer.Error(err)
 	}
 
-	err = r.ch.PublishWithContext(
+	_, err = r.client.Publish(
 		ctx,
-		string(input.Exchange),
-		string(input.RoutingKey),
-		true,
-		false,
-		amqp.Publishing{
-			MessageId:     messageID,
-			CorrelationId: correlationID,
-			ContentType:   "application/protobuf",
-			Body:          body,
+		erabbitmq.PubInput{
+			ExchangeName: string(input.Exchange),
+			RoutingKey:   string(input.RoutingKey),
+			Mandatory:    false,
+			Immediate:    false,
+			Msg: amqp.Publishing{
+				MessageId:     messageID,
+				CorrelationId: correlationID,
+				ContentType:   "application/protobuf",
+				Body:          body,
+				Headers: amqp.Table{
+					"correlation_id": correlationID,
+				},
+			},
+			DelayRetry: 0,
+			MaxRetry:   1,
 		},
 	)
 	if err != nil {
-		span.RecordError(err)
-		span.SetStatus(codes.Error, err.Error())
 		return tracer.Error(err)
 	}
 
