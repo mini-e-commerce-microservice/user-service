@@ -3,13 +3,14 @@ package users
 import (
 	"context"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
+	"github.com/mini-e-commerce-microservice/user-service/internal/model"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	"time"
 )
 
 func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (output CreateUserOutput, err error) {
 	query := r.sq.Insert("users").Columns(
-		"email", "password", "is_email_verified", "register_as", "created_at", "updated_at",
+		"email", "password", "is_email_verified", "register_as", "created_at", "updated_at", "trace_parent",
 	).Values(
 		input.Payload.Email,
 		input.Payload.Password,
@@ -17,6 +18,7 @@ func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (out
 		input.Payload.RegisterAs,
 		time.Now().UTC(),
 		time.Now().UTC(),
+		model.GetTraceParent(ctx),
 	).Suffix("RETURNING id")
 
 	rdbms := r.rdbms

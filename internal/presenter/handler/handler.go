@@ -1,56 +1,46 @@
 package handler
 
 import (
-	httplogwrap "github.com/SyaibanAhmadRamadhan/http-log-wrap"
+	whttp "github.com/SyaibanAhmadRamadhan/http-wrapper"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-playground/validator/v10"
 	"github.com/mini-e-commerce-microservice/user-service/internal/services"
-	"net/http"
-	"reflect"
 )
 
 type handler struct {
-	r         *chi.Mux
-	validator *validator.Validate
-	service   *services.Dependency
+	r        *chi.Mux
+	service  *services.Dependency
+	httpOtel *whttp.Opentelemetry
 }
 
 func NewHandler(r *chi.Mux, service *services.Dependency) {
-	r.Use(func(h http.Handler) http.Handler {
-		return httplogwrap.HttpOtel(h,
-			httplogwrap.WithExtraHeaders("X-User-Id"),
-			httplogwrap.WithOutSetRequestIDHeader(),
-		)
-	})
-
-	v := validator.New()
-	v.RegisterTagNameFunc(func(field reflect.StructField) string {
-		return field.Tag.Get("json")
-	})
 
 	h := &handler{
-		r:         r,
-		validator: v,
-		service:   service,
+		r:       r,
+		service: service,
+		httpOtel: whttp.NewOtel(
+			whttp.WithRecoverMode(true),
+			whttp.WithPropagator(),
+			whttp.WithValidator(nil, nil),
+		),
 	}
 	h.route()
 }
 
 func (h *handler) route() {
-	h.r.Post("/api/v1/register", httplogwrap.TraceHttpOtel(
+	h.r.Post("/api/v1/register", h.httpOtel.Trace(
 		h.V1RegisterPost,
-		httplogwrap.WithLogRequestBody(false),
+		whttp.WithLogRequestBody(false),
 	))
 
-	h.r.Post("/api/v1/otp", httplogwrap.TraceHttpOtel(
+	h.r.Post("/api/v1/otp", h.httpOtel.Trace(
 		h.V1SendOtpPost,
 	))
 
-	h.r.Put("/api/v1/otp", httplogwrap.TraceHttpOtel(
+	h.r.Put("/api/v1/otp", h.httpOtel.Trace(
 		h.V1VerifyOtpPut,
 	))
 
-	h.r.Put("/api/v1/verify-email-user", httplogwrap.TraceHttpOtel(
+	h.r.Put("/api/v1/verify-email-user", h.httpOtel.Trace(
 		h.V1VerifyEmailUser,
 	))
 }

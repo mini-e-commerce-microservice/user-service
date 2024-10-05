@@ -23,7 +23,6 @@ type Dependency struct {
 func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient erabbitmq.RabbitMQPubSub) *Dependency {
 	s3 := s3_wrapper_minio.New(minioClient)
 	rdbms := wsqlx.NewRdbms(db)
-	dbtx := wsqlx.NewSqlxTransaction(db)
 
 	userRepository := users.NewRepository(rdbms)
 	profileRepository := profiles.NewRepository(rdbms)
@@ -35,7 +34,7 @@ func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient erabbi
 		UserRepository:     userRepository,
 		ProfileRepository:  profileRepository,
 		RabbitmqRepository: rabbitmqRepository,
-		DBTx:               dbtx,
+		DBTx:               rdbms,
 		MinioConfig:        conf.GetConfig().Minio,
 		JwtConfig:          conf.GetConfig().Jwt,
 	})
@@ -43,7 +42,7 @@ func NewDependency(minioClient *minio.Client, db *sqlx.DB, rabbitmqClient erabbi
 		UserRepository:     userRepository,
 		RabbitmqRepository: rabbitmqRepository,
 		OtpRepository:      otpRepository,
-		DBTx:               dbtx,
+		DBTx:               rdbms,
 	}, conf.GetConfig().Jwt)
 
 	return &Dependency{

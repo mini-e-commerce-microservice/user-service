@@ -10,7 +10,7 @@ import (
 func (h *handler) V1VerifyEmailUser(w http.ResponseWriter, r *http.Request) {
 	req := api.V1VerifyEmailUserRequestBody{}
 
-	if !h.bodyRequestBindToStruct(w, r, &req) {
+	if !h.httpOtel.BindBodyRequest(w, r, &req) {
 		return
 	}
 
@@ -19,9 +19,9 @@ func (h *handler) V1VerifyEmailUser(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if errors.Is(err, user.ErrTokenIsExpired) || errors.Is(err, user.ErrInvalidToken) {
-			Error(w, r, http.StatusBadRequest, err, "invalid otp token")
+			h.httpOtel.Err(w, r, http.StatusBadRequest, err, "invalid otp token")
 		} else {
-			Error(w, r, http.StatusInternalServerError, err)
+			h.httpOtel.Err(w, r, http.StatusInternalServerError, err)
 		}
 		return
 	}

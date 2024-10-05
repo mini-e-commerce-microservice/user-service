@@ -90,8 +90,8 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 		return output, tracer.Error(err)
 	}
 
-	err = s.dbTx.DoTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted, ReadOnly: false},
-		func(tx wsqlx.Rdbms) (err error) {
+	err = s.dbTx.DoTxContext(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted, ReadOnly: false},
+		func(ctx context.Context, tx wsqlx.Rdbms) (err error) {
 			userCreateOutput, err := s.userRepository.CreateUser(ctx, users.CreateUserInput{
 				Tx: tx,
 				Payload: model.User{

@@ -5,17 +5,16 @@ go 1.22.5
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/squirrel v1.5.4
+	github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq v1.240930.2210
 	github.com/SyaibanAhmadRamadhan/go-s3-wrapper v1.240914.1119
 	github.com/SyaibanAhmadRamadhan/go-s3-wrapper/minio v1.240914.1121
-	github.com/SyaibanAhmadRamadhan/http-log-wrap v1.240914.1053
-	github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.240914.1108
+	github.com/SyaibanAhmadRamadhan/http-wrapper v1.241004.1117
+	github.com/SyaibanAhmadRamadhan/sqlx-wrapper v1.241004.1145-0.20241004170444-6f0db6ff6d73
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1
 	github.com/go-faker/faker/v4 v4.5.0
-	github.com/go-playground/validator/v10 v10.22.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/schema v1.4.1
 	github.com/guregu/null/v5 v5.0.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
@@ -39,7 +38,6 @@ require (
 
 require (
 	github.com/SyaibanAhmadRamadhan/event-bus v1.240930.2158 // indirect
-	github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq v1.240930.2210 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -50,7 +48,9 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.22.1 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
+	github.com/gorilla/schema v1.4.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -77,7 +77,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.30.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.3.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/multierr v1.9.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect

@@ -2,6 +2,8 @@ package handler
 
 import (
 	"errors"
+	"fmt"
+	whttp "github.com/SyaibanAhmadRamadhan/http-wrapper"
 	"github.com/mini-e-commerce-microservice/user-service/generated/api"
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/user"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
@@ -11,7 +13,7 @@ import (
 func (h *handler) V1RegisterPost(w http.ResponseWriter, r *http.Request) {
 	req := api.V1RegisterPostRequestBody{}
 
-	if !h.bodyRequestBindToStruct(w, r, &req) {
+	if !h.httpOtel.BindBodyRequest(w, r, &req) {
 		return
 	}
 
@@ -44,9 +46,9 @@ func (h *handler) V1RegisterPost(w http.ResponseWriter, r *http.Request) {
 	registerOutput, err := h.service.UserService.RegisterUser(r.Context(), registerUserInput)
 	if err != nil {
 		if errors.Is(err, user.ErrEmailAvailable) {
-			Error(w, r, http.StatusBadRequest, err, user.ErrEmailAvailable.Error())
+			h.httpOtel.Err(w, r, http.StatusBadRequest, err, user.ErrEmailAvailable.Error())
 		} else {
-			Error(w, r, http.StatusInternalServerError, err)
+			h.httpOtel.Err(w, r, http.StatusInternalServerError, err)
 		}
 		return
 	}
@@ -71,5 +73,6 @@ func (h *handler) V1RegisterPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.writeJson(w, r, http.StatusOK, resp)
+	fmt.Println(whttp.GetTraceParent(r.Context()))
+	h.httpOtel.WriteJson(w, r, http.StatusOK, resp)
 }

@@ -2,7 +2,7 @@
 
 MIGRATE_CMD=migrate
 MIGRATE_DIR=./migrations
-DB_DSN=postgres://user-svc:user-svc@localhost:5433/user-svc?sslmode=disable
+DB_DSN=postgres://user_svc_user:user_svc@127.0.0.1:5433/user_svc_db?sslmode=disable
 DATE=$(shell date +%Y%m%d_%H%M%S)
 
 # Generates mocks for interfaces
