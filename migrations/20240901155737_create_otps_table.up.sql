@@ -8,5 +8,5 @@ CREATE TABLE otps
     type    varchar(50)  not null,
     counter smallint     not null,
     expired timestamp    not null,
-    token   varchar(255)
+    token   text
 );

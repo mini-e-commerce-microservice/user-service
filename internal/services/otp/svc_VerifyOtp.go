@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 	"github.com/guregu/null/v5"
-	"github.com/mini-e-commerce-microservice/user-service/generated/proto/jwt_payload_proto"
+	"github.com/mini-e-commerce-microservice/user-service/generated/proto/jwt_claims_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/otps"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	jwt_util "github.com/mini-e-commerce-microservice/user-service/internal/util/jwt"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
-	"google.golang.org/protobuf/proto"
 	"time"
 )
 
@@ -82,34 +81,20 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 	return
 }
 
-func (s *service) generateTokenOTP(input VerifyOtpInput, user users.FindOneUserOutput) (string, error) {
-	payloadProto := &jwt_payload_proto.JwtPayload{}
-
+func (s *service) generateTokenOTP(input VerifyOtpInput, user users.FindOneUserOutput) (tokenStr string, err error) {
 	if input.Usecase == primitive.OtpUseCaseVerifyEmail {
-		payloadProto = &jwt_payload_proto.JwtPayload{
-			Data: &jwt_payload_proto.JwtPayload_OtpActivationEmail{
-				OtpActivationEmail: &jwt_payload_proto.JwtPayloadDataOtpActivationEmail{
-					UserId:     user.Data.ID,
-					Email:      user.Data.Email,
-					IsVerified: true,
-				},
+		claims := jwt_util.OtpActivationEmailClaims{
+			JwtOtpActivationEmailClaims: &jwt_claims_proto.JwtOtpActivationEmailClaims{
+				UserId:     user.Data.ID,
+				Email:      user.Data.Email,
+				IsVerified: true,
 			},
+		}
+		tokenStr, err = claims.GenerateHS256(s.jwtKey, input.Usecase.GetTTL())
+		if err != nil {
+			return "", tracer.Error(err)
 		}
 	}
 
-	body, err := proto.Marshal(payloadProto)
-	if err != nil {
-		return "", tracer.Error(err)
-	}
-
-	tokenStr, err := jwt_util.GenerateHS256(jwt_util.Jwt{
-		Key:     s.jwtKey,
-		Payload: string(body),
-		Exp:     input.Usecase.GetTTL(),
-	})
-	if err != nil {
-		return "", tracer.Error(err)
-	}
-
-	return tokenStr, nil
+	return
 }
