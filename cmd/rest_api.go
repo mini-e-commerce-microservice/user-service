@@ -40,27 +40,27 @@ var restApiCmd = &cobra.Command{
 
 		go func() {
 			if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-				panic(err)
+				log.Err(err).Msg("failed listen serve")
+				ctx.Done()
 			}
 		}()
 
 		<-ctx.Done()
 		log.Info().Msg("Received shutdown signal, shutting down server gracefully...")
 
-		if err := server.Shutdown(context.TODO()); err != nil {
-			panic(err)
+		if err := server.Shutdown(context.Background()); err != nil {
+			log.Err(err).Msg("failed shutdown server")
 		}
 
-		if err := otel(context.TODO()); err != nil {
-			panic(err)
-		}
-
-		if err := dbClose(context.TODO()); err != nil {
-			panic(err)
+		if err := dbClose(context.Background()); err != nil {
+			log.Err(err).Msg("failed closed db")
 		}
 
 		rabbitmq.Close()
 
+		if err := otel(context.Background()); err != nil {
+			log.Err(err).Msg("failed closed otel")
+		}
 		log.Info().Msg("Shutdown complete. Exiting.")
 		return
 	},
