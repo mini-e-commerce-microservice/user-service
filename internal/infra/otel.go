@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
+	"github.com/mini-e-commerce-microservice/user-service/generated/proto/secret_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"github.com/rs/zerolog/log"
@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-func NewOtel(cred conf.ConfigOpenTelemetry) primitive.CloseFn {
+func NewOtel(cred *secret_proto.Otel, tracerName string) primitive.CloseFn {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -37,7 +37,7 @@ func NewOtel(cred conf.ConfigOpenTelemetry) primitive.CloseFn {
 	util.Panic(err)
 
 	otelProvider := &otelProvider{
-		name: cred.TracerName,
+		name: tracerName,
 	}
 
 	traceProvide, closeFnTracer, err := otelProvider.start(traceExp)

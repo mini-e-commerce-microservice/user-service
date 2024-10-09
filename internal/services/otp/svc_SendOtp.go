@@ -58,8 +58,8 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 			}
 
 			err = s.rabbitmqRepository.Publish(ctx, rabbitmq.PublishInput{
-				RoutingKey: rabbitmq.RoutingKeyNotificationTypeEmail,
-				Exchange:   rabbitmq.ExchangeNameNotification,
+				RoutingKey: s.rabbitMQConf.Exchanges.NotificationExchange.NotificationTypeEmail.RoutingKey.Name,
+				Exchange:   s.rabbitMQConf.Exchanges.NotificationExchange.Name,
 				Payload: &notification_proto.Notification{
 					Type: notification_proto.NotificationType_ACTIVATION_EMAIL,
 					Data: &notification_proto.Notification_ActivationEmail{

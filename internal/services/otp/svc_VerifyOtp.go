@@ -90,7 +90,7 @@ func (s *service) generateTokenOTP(input VerifyOtpInput, user users.FindOneUserO
 				IsVerified: true,
 			},
 		}
-		tokenStr, err = claims.GenerateHS256(s.jwtKey, input.Usecase.GetTTL())
+		tokenStr, err = claims.GenerateHS256(s.jwtConf.OtpUsecase.Key, input.Usecase.GetTTL())
 		if err != nil {
 			return "", tracer.Error(err)
 		}

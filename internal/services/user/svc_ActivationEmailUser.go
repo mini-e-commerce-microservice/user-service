@@ -14,7 +14,7 @@ import (
 func (s *service) ActivationEmailUser(ctx context.Context, input ActivationEmailUserInput) (err error) {
 	claims := jwt_util.OtpActivationEmailClaims{}
 
-	err = claims.ClaimHS256(input.Token, s.keyJwtOtp)
+	err = claims.ClaimHS256(input.Token, s.jwtConf.OtpUsecase.Key)
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
 			err = errors.Join(err, ErrTokenIsExpired)

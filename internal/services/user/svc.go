@@ -3,7 +3,7 @@ package user
 import (
 	s3wrapper "github.com/SyaibanAhmadRamadhan/go-s3-wrapper"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
-	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
+	"github.com/mini-e-commerce-microservice/user-service/generated/proto/secret_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/profiles"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/rabbitmq"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
@@ -16,7 +16,7 @@ type service struct {
 	rabbitmqRepository rabbitmq.Repository
 	dbTx               wsqlx.Tx
 	bucketName         string
-	keyJwtOtp          string
+	jwtConf            *secret_proto.Jwt
 }
 
 type NewServiceOptions struct {
@@ -25,8 +25,8 @@ type NewServiceOptions struct {
 	ProfileRepository  profiles.Repository
 	RabbitmqRepository rabbitmq.Repository
 	DBTx               wsqlx.Tx
-	MinioConfig        conf.ConfigMinio
-	JwtConfig          conf.ConfigJWT
+	BucketName         string
+	JwtConfig          *secret_proto.Jwt
 }
 
 func NewService(opts NewServiceOptions) *service {
@@ -36,7 +36,7 @@ func NewService(opts NewServiceOptions) *service {
 		profileRepository:  opts.ProfileRepository,
 		rabbitmqRepository: opts.RabbitmqRepository,
 		dbTx:               opts.DBTx,
-		bucketName:         opts.MinioConfig.PrivateBucket,
-		keyJwtOtp:          opts.JwtConfig.KeyOtpUsecase,
+		bucketName:         opts.BucketName,
+		jwtConf:            opts.JwtConfig,
 	}
 }

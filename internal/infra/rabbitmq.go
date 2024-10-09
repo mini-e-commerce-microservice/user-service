@@ -2,13 +2,13 @@ package infra
 
 import (
 	"context"
-	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
+	"github.com/mini-e-commerce-microservice/user-service/generated/proto/secret_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
 )
 
-func NewRabbitMq(cred conf.ConfigRabbitMQ) (*amqp.Connection, *amqp.Channel, primitive.CloseFn) {
+func NewRabbitMq(cred *secret_proto.RabbitMQ) (*amqp.Connection, *amqp.Channel, primitive.CloseFn) {
 	conn, err := amqp.Dial(cred.Url)
 	if err != nil {
 		panic(err)
