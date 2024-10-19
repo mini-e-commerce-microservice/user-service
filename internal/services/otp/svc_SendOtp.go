@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/guregu/null/v5"
 	"github.com/mini-e-commerce-microservice/user-service/generated/proto/notification_proto"
@@ -15,7 +16,6 @@ import (
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
@@ -23,7 +23,7 @@ import (
 func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 	userOutput, err := s.validateExistingUser(ctx, input.Type, input.DestinationAddress)
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	err = s.dbTx.DoTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted, ReadOnly: false},
@@ -36,7 +36,7 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 				TokenIsNil: true,
 			})
 			if err != nil {
-				return tracer.Error(err)
+				return collection.Err(err)
 			}
 
 			expiredOtp := time.Now().UTC().Add(input.Usecase.GetTTL())
@@ -54,7 +54,7 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 				},
 			})
 			if err != nil {
-				return tracer.Error(err)
+				return collection.Err(err)
 			}
 
 			err = s.rabbitmqRepository.Publish(ctx, rabbitmq.PublishInput{
@@ -73,14 +73,14 @@ func (s *service) SendOtp(ctx context.Context, input SendOtpInput) (err error) {
 				},
 			})
 			if err != nil {
-				return tracer.Error(err)
+				return collection.Err(err)
 			}
 
 			return
 		},
 	)
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	return
@@ -94,12 +94,12 @@ func (s *service) validateExistingUser(ctx context.Context, otpType primitive.Ot
 		if err != nil {
 			if errors.Is(err, repositories.ErrRecordNotFound) {
 				err = errors.Join(err, fmt.Errorf("%w: %s", ErrDestinationAddressNotFound, destinationAddr))
-				return userOutput, tracer.Error(err)
+				return userOutput, collection.Err(err)
 			}
-			return userOutput, tracer.Error(err)
+			return userOutput, collection.Err(err)
 		}
 		if userOutput.Data.IsEmailVerified {
-			return userOutput, tracer.Error(ErrEmailUserIsVerified)
+			return userOutput, collection.Err(ErrEmailUserIsVerified)
 		}
 	}
 

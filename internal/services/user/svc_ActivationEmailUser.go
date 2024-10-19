@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/guregu/null/v5"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	jwt_util "github.com/mini-e-commerce-microservice/user-service/internal/util/jwt"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 )
 
 func (s *service) ActivationEmailUser(ctx context.Context, input ActivationEmailUserInput) (err error) {
@@ -21,7 +21,7 @@ func (s *service) ActivationEmailUser(ctx context.Context, input ActivationEmail
 		} else {
 			err = fmt.Errorf("err from jwt: %s. %w", err.Error(), ErrInvalidToken)
 		}
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	err = s.userRepository.UpdateUser(ctx, users.UpdateUserInput{
@@ -32,7 +32,7 @@ func (s *service) ActivationEmailUser(ctx context.Context, input ActivationEmail
 		},
 	})
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 	return
 }

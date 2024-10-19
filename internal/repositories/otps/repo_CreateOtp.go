@@ -2,8 +2,8 @@ package otps
 
 import (
 	"context"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 )
 
 func (r *repository) CreateOtp(ctx context.Context, input CreateOtpInput) (output CreateOtpOutput, err error) {
@@ -25,7 +25,7 @@ func (r *repository) CreateOtp(ctx context.Context, input CreateOtpInput) (outpu
 
 	err = rdbms.QueryRowSq(ctx, query, wsqlx.QueryRowScanTypeDefault, &output.ID)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	return

@@ -3,8 +3,8 @@ package rabbitmq
 import (
 	"context"
 	erabbitmq "github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/google/uuid"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/protobuf/proto"
 )
@@ -14,7 +14,7 @@ func (r *rabbitmq) Publish(ctx context.Context, input PublishInput) (err error) 
 
 	body, err := proto.Marshal(input.Payload)
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	_, err = r.client.Publish(
@@ -38,7 +38,7 @@ func (r *rabbitmq) Publish(ctx context.Context, input PublishInput) (err error) 
 		},
 	)
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	return

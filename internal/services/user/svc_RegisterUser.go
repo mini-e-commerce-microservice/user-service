@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	s3wrapper "github.com/SyaibanAhmadRamadhan/go-s3-wrapper"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/guregu/null/v5"
@@ -10,7 +11,6 @@ import (
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/profiles"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/sync/errgroup"
 	"time"
@@ -21,7 +21,7 @@ import (
 func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (output RegisterUserOutput, err error) {
 	err = s.validateRegisterUser(ctx, input)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	passwordHash := make([]byte, 0)
@@ -33,7 +33,7 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 	eg.Go(func() (err error) {
 		passwordHash, err = bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 		if err != nil {
-			return tracer.Error(err)
+			return collection.Err(err)
 		}
 		return
 	})
@@ -48,7 +48,7 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 				Expired:    5 * time.Minute,
 			})
 			if err != nil {
-				return tracer.Error(err)
+				return collection.Err(err)
 			}
 
 			output.BackgroundImagePresignedUrlUpload = &primitive.PresignedFileUploadOutput{
@@ -72,7 +72,7 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 				Expired:    5 * time.Minute,
 			})
 			if err != nil {
-				return tracer.Error(err)
+				return collection.Err(err)
 			}
 
 			output.ImageProfilePresignedUrlUpload = &primitive.PresignedFileUploadOutput{
@@ -87,7 +87,7 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 	}
 
 	if err = eg.Wait(); err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	err = s.dbTx.DoTxContext(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted, ReadOnly: false},
@@ -102,7 +102,7 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 				},
 			})
 			if err != nil {
-				return tracer.Error(err)
+				return collection.Err(err)
 			}
 
 			_, err = s.profileRepository.CreateProfile(ctx, profiles.CreateProfileInput{
@@ -115,7 +115,7 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 				},
 			})
 			if err != nil {
-				return tracer.Error(err)
+				return collection.Err(err)
 			}
 
 			output.UserID = userCreateOutput.ID
@@ -124,7 +124,7 @@ func (s *service) RegisterUser(ctx context.Context, input RegisterUserInput) (ou
 		},
 	)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	return
@@ -135,11 +135,11 @@ func (s *service) validateRegisterUser(ctx context.Context, input RegisterUserIn
 		Email: null.StringFrom(input.Email),
 	})
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	if exists {
-		return tracer.Error(ErrEmailAvailable)
+		return collection.Err(ErrEmailAvailable)
 	}
 	return
 }

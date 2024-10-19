@@ -2,8 +2,8 @@ package profiles
 
 import (
 	"context"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	"time"
 )
 
@@ -26,7 +26,7 @@ func (r *repository) CreateProfile(ctx context.Context, input CreateProfileInput
 
 	err = rdbms.QueryRowSq(ctx, query, wsqlx.QueryRowScanTypeDefault, &output.ID)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 	return
 }

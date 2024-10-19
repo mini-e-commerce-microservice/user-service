@@ -8,6 +8,8 @@ github.com/SyaibanAhmadRamadhan/event-bus v1.240930.2158 h1:HZmtx0it8DHaoVq2gojK
 github.com/SyaibanAhmadRamadhan/event-bus v1.240930.2158/go.mod h1:zXKY28mictpD9fWnauLpt5YIvlGe/QxP027QzCMJePw=
 github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq v1.240930.2210 h1:qHW+4iBnrTvfK8OX4HoDdzcRfOhCM8M2yNGaxYpT/nY=
 github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq v1.240930.2210/go.mod h1:m67CdXKxnFrXVbJSB1aOVmt1Wq2EWKeTo/eHxV+nhSs=
+github.com/SyaibanAhmadRamadhan/go-collection v1.241019.2240 h1:j1PA6IGSwflZEZ1AmBrapF2m+j6KcUQVy20+7/duuiY=
+github.com/SyaibanAhmadRamadhan/go-collection v1.241019.2240/go.mod h1:/TjBnG/JdgUGV+VRE3Gn+kl8r3LoOvwctwtZz13tJHM=
 github.com/SyaibanAhmadRamadhan/go-s3-wrapper v1.240914.1119 h1:mcqvTsEindoW9yc9KOpiwFpFVAFszsMSyPtBD2pg6Vo=
 github.com/SyaibanAhmadRamadhan/go-s3-wrapper v1.240914.1119/go.mod h1:se7qYbeALfCS8nLcSWBWOUacfCmn4levAIH3r53cZTc=
 github.com/SyaibanAhmadRamadhan/go-s3-wrapper/minio v1.240914.1121 h1:0to/emDFpzbBMgVKMx8I65lMrRJHqFI+9xl94RC8FwQ=

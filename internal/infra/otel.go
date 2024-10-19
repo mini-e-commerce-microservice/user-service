@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/mini-e-commerce-microservice/user-service/generated/proto/secret_proto"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/otel"
@@ -34,7 +34,7 @@ func NewOtel(cred *secret_proto.Otel, tracerName string) primitive.CloseFn {
 	)
 
 	traceExp, err := otlptrace.New(ctx, traceCli)
-	util.Panic(err)
+	collection.PanicIfErr(err)
 
 	otelProvider := &otelProvider{
 		name: tracerName,

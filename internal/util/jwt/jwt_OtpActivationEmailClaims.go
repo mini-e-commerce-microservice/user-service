@@ -2,9 +2,9 @@ package jwt_util
 
 import (
 	"fmt"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/mini-e-commerce-microservice/user-service/generated/proto/jwt_claims_proto"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	"time"
 )
 
@@ -28,7 +28,7 @@ func (o *OtpActivationEmailClaims) GenerateHS256(key string, exp time.Duration) 
 
 	tokenStr, err := tokenParse.SignedString([]byte(key))
 	if err != nil {
-		return "", tracer.Error(err)
+		return "", collection.Err(err)
 	}
 
 	return tokenStr, nil
@@ -42,11 +42,11 @@ func (o *OtpActivationEmailClaims) ClaimHS256(tokenStr, key string) error {
 		return []byte(key), nil
 	})
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	if !tokenParse.Valid {
-		return tracer.Error(ErrInvalidParseToken)
+		return collection.Err(ErrInvalidParseToken)
 	}
 
 	return nil

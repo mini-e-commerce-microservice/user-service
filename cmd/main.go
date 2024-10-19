@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mini-e-commerce-microservice/user-service/internal/util"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/spf13/cobra"
 )
 
@@ -11,5 +11,5 @@ func main() {
 	rootCmd.AddCommand(restApiCmd)
 
 	err := rootCmd.Execute()
-	util.Panic(err)
+	collection.PanicIfErr(err)
 }

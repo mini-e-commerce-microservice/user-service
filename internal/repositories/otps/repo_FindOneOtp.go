@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/Masterminds/squirrel"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 )
 
 func (r *repository) FindOneOtp(ctx context.Context, input FindOneOtpInput) (output FindOneOtpOutput, err error) {
@@ -49,7 +49,7 @@ func (r *repository) FindOneOtp(ctx context.Context, input FindOneOtpInput) (out
 			err = repositories.ErrRecordNotFound
 		}
 
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	return

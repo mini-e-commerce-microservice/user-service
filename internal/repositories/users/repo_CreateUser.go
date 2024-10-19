@@ -2,8 +2,9 @@ package users
 
 import (
 	"context"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
+	"github.com/mini-e-commerce-microservice/user-service/internal/util"
 	"time"
 )
 
@@ -17,7 +18,7 @@ func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (out
 		input.Payload.RegisterAs,
 		time.Now().UTC(),
 		time.Now().UTC(),
-		tracer.GetTraceParent(ctx),
+		util.GetTraceParent(ctx),
 	).Suffix("RETURNING id")
 
 	rdbms := r.rdbms
@@ -27,7 +28,7 @@ func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (out
 
 	err = rdbms.QueryRowSq(ctx, query, wsqlx.QueryRowScanTypeDefault, &output.ID)
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	return

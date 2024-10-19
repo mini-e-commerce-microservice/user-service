@@ -3,7 +3,7 @@ package otps
 import (
 	"context"
 	"github.com/Masterminds/squirrel"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 )
 
 func (r *repository) UpdateOtp(ctx context.Context, input UpdateOtpInput) (err error) {
@@ -23,7 +23,7 @@ func (r *repository) UpdateOtp(ctx context.Context, input UpdateOtpInput) (err e
 
 	_, err = rdbms.ExecSq(ctx, query)
 	if err != nil {
-		return tracer.Error(err)
+		return collection.Err(err)
 	}
 
 	return

@@ -3,6 +3,7 @@ package otp
 import (
 	"context"
 	"errors"
+	"github.com/SyaibanAhmadRamadhan/go-collection"
 	"github.com/guregu/null/v5"
 	"github.com/mini-e-commerce-microservice/user-service/generated/proto/jwt_claims_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories"
@@ -10,7 +11,6 @@ import (
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
 	jwt_util "github.com/mini-e-commerce-microservice/user-service/internal/util/jwt"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	"time"
 )
 
@@ -18,7 +18,7 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 	userOutput, err := s.validateExistingUser(ctx, input.Type, input.DestinationAddress)
 	if err != nil {
 		if !errors.Is(err, ErrEmailUserIsVerified) {
-			return output, tracer.Error(err)
+			return output, collection.Err(err)
 		}
 		err = nil
 	}
@@ -33,14 +33,14 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 		if errors.Is(err, repositories.ErrRecordNotFound) {
 			err = errors.Join(err, ErrOtpNotFound)
 		}
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	if otpOutput.Data.Expired.Before(time.Now().UTC()) {
-		return output, tracer.Error(ErrOtpExpired)
+		return output, collection.Err(ErrOtpExpired)
 	}
 	if otpOutput.Data.Counter >= input.Usecase.GetLimitRetry() {
-		return output, tracer.Error(ErrOtpCounterExceeded)
+		return output, collection.Err(ErrOtpCounterExceeded)
 	}
 
 	token := null.String{}
@@ -54,7 +54,7 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 	} else {
 		tokenStr, err = s.generateTokenOTP(input, userOutput)
 		if err != nil {
-			return output, tracer.Error(err)
+			return output, collection.Err(err)
 		}
 
 		token = null.StringFrom(tokenStr)
@@ -68,11 +68,11 @@ func (s *service) VerifyOtp(ctx context.Context, input VerifyOtpInput) (output V
 		},
 	})
 	if err != nil {
-		return output, tracer.Error(err)
+		return output, collection.Err(err)
 	}
 
 	if errOtp != nil {
-		return output, tracer.Error(errOtp)
+		return output, collection.Err(errOtp)
 	}
 
 	output = VerifyOtpOutput{
@@ -92,7 +92,7 @@ func (s *service) generateTokenOTP(input VerifyOtpInput, user users.FindOneUserO
 		}
 		tokenStr, err = claims.GenerateHS256(s.jwtConf.OtpUsecase.Key, input.Usecase.GetTTL())
 		if err != nil {
-			return "", tracer.Error(err)
+			return "", collection.Err(err)
 		}
 	}
 

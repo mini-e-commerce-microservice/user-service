@@ -28,7 +28,7 @@ func NewDependency(appConf *conf.AppConfig) (*Dependency, func(ctx context.Conte
 	minioConf := conf.LoadMinioConf()
 	rabbitMQConf := conf.LoadRabbitMQConf()
 
-	otelCloseFn := infra.NewOtel(otelConf, appConf.ServiceName)
+	otelCloseFn := infra.NewOtel(otelConf, appConf.TracerName)
 	pgdb, pgdbCloseFn := infra.NewPostgresql(appConf.DatabaseDSN)
 	minio := infra.NewMinio(conf.LoadMinioConf())
 	rabbitmqClient := erabbitmq.New(rabbitMQConf.Url, erabbitmq.WithOtel(rabbitMQConf.Url))
