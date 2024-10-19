@@ -1,7 +1,9 @@
 package tracer
 
 import (
+	"context"
 	"fmt"
+	whttp "github.com/SyaibanAhmadRamadhan/http-wrapper"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 	"runtime"
@@ -20,4 +22,13 @@ func RecordErrorOtel(span trace.Span, err error) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 	}
+}
+
+func GetTraceParent(ctx context.Context) *string {
+	traceParent := whttp.GetTraceParent(ctx)
+	if traceParent != "" {
+		return &traceParent
+	}
+
+	return nil
 }

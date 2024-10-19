@@ -3,7 +3,6 @@ package users
 import (
 	"context"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
-	"github.com/mini-e-commerce-microservice/user-service/internal/model"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 	"time"
 )
@@ -18,7 +17,7 @@ func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (out
 		input.Payload.RegisterAs,
 		time.Now().UTC(),
 		time.Now().UTC(),
-		model.GetTraceParent(ctx),
+		tracer.GetTraceParent(ctx),
 	).Suffix("RETURNING id")
 
 	rdbms := r.rdbms

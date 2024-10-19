@@ -3,12 +3,11 @@ package users
 import (
 	"context"
 	"github.com/Masterminds/squirrel"
-	"github.com/mini-e-commerce-microservice/user-service/internal/model"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/tracer"
 )
 
 func (r *repository) UpdateUser(ctx context.Context, input UpdateUserInput) (err error) {
-	query := r.sq.Update("users").Set("trace_parent", model.GetTraceParent(ctx))
+	query := r.sq.Update("users").Set("trace_parent", tracer.GetTraceParent(ctx))
 	if input.Email.Valid {
 		query = query.Where(squirrel.Eq{"email": input.Email.String})
 	}

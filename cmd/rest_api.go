@@ -43,7 +43,7 @@ var restApiCmd = &cobra.Command{
 			log.Err(err).Msg("failed shutdown server")
 		}
 
-		closeFn()
+		closeFn(context.Background())
 		log.Info().Msg("Shutdown complete. Exiting.")
 		return
 	},

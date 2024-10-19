@@ -14,6 +14,7 @@ import (
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/otp"
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/user"
 	"github.com/rs/zerolog/log"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 type Dependency struct {
@@ -21,25 +22,27 @@ type Dependency struct {
 	OtpService  otp.Service
 }
 
-func NewDependency(appConf *conf.AppConfig) (*Dependency, func()) {
+func NewDependency(appConf *conf.AppConfig) (*Dependency, func(ctx context.Context)) {
 	otelConf := conf.LoadOtelConf()
 	jwtConf := conf.LoadJwtConf()
 	minioConf := conf.LoadMinioConf()
 	rabbitMQConf := conf.LoadRabbitMQConf()
 
-	otel := infra.NewOtel(otelConf, appConf.ServiceName)
-	postgre, dbClose := infra.NewPostgresql(appConf.DatabaseDSN)
+	otelCloseFn := infra.NewOtel(otelConf, appConf.ServiceName)
+	pgdb, pgdbCloseFn := infra.NewPostgresql(appConf.DatabaseDSN)
 	minio := infra.NewMinio(conf.LoadMinioConf())
 	rabbitmqClient := erabbitmq.New(rabbitMQConf.Url, erabbitmq.WithOtel(rabbitMQConf.Url))
 
 	s3 := s3_wrapper_minio.New(minio)
-	rdbms := wsqlx.NewRdbms(postgre)
+	rdbms := wsqlx.NewRdbms(pgdb, wsqlx.WithAttributes(semconv.DBSystemPostgreSQL))
 
+	// REPOSITORY LAYER
 	userRepository := users.NewRepository(rdbms)
 	profileRepository := profiles.NewRepository(rdbms)
 	otpRepository := otps.NewRepository(rdbms)
 	rabbitmqRepository := rabbitmq.NewRabbitMq(rabbitmqClient)
 
+	// SERVICE LAYER
 	userSvc := user.NewService(user.NewServiceOptions{
 		S3:                 s3,
 		UserRepository:     userRepository,
@@ -58,14 +61,14 @@ func NewDependency(appConf *conf.AppConfig) (*Dependency, func()) {
 		RabbitMQConf:       rabbitMQConf,
 	})
 
-	closeFn := func() {
-		if err := dbClose(context.Background()); err != nil {
+	closeFn := func(ctx context.Context) {
+		if err := pgdbCloseFn(ctx); err != nil {
 			log.Err(err).Msg("failed closed db")
 		}
 
 		rabbitmqClient.Close()
 
-		if err := otel(context.Background()); err != nil {
+		if err := otelCloseFn(ctx); err != nil {
 			log.Err(err).Msg("failed closed otel")
 		}
 	}
