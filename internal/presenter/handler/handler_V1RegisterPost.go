@@ -2,8 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
-	whttp "github.com/SyaibanAhmadRamadhan/http-wrapper"
 	"github.com/mini-e-commerce-microservice/user-service/generated/api"
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/user"
 	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
@@ -73,6 +71,5 @@ func (h *handler) V1RegisterPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Println(whttp.GetTraceParent(r.Context()))
 	h.httpOtel.WriteJson(w, r, http.StatusOK, resp)
 }

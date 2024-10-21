@@ -18,12 +18,14 @@ var restApiCmd = &cobra.Command{
 	Short: "run rest api",
 	Run: func(cmd *cobra.Command, args []string) {
 		appConf := conf.LoadAppConf()
+		jwtConf := conf.LoadJwtConf()
 
-		dependency, closeFn := services.NewDependency(appConf)
+		dependency, closeFn := services.NewDependency(appConf, jwtConf)
 
 		server := presenter.New(&presenter.Presenter{
-			Dependency: dependency,
-			Port:       appConf.AppPort,
+			Dependency:         dependency,
+			JwtAccessTokenConf: jwtConf.AccessToken,
+			Port:               appConf.AppPort,
 		})
 
 		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

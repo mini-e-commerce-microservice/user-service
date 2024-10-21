@@ -5,6 +5,7 @@ import (
 	erabbitmq "github.com/SyaibanAhmadRamadhan/event-bus/rabbitmq"
 	s3_wrapper_minio "github.com/SyaibanAhmadRamadhan/go-s3-wrapper/minio"
 	wsqlx "github.com/SyaibanAhmadRamadhan/sqlx-wrapper"
+	"github.com/mini-e-commerce-microservice/user-service/generated/proto/secret_proto"
 	"github.com/mini-e-commerce-microservice/user-service/internal/conf"
 	"github.com/mini-e-commerce-microservice/user-service/internal/infra"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/otps"
@@ -22,9 +23,8 @@ type Dependency struct {
 	OtpService  otp.Service
 }
 
-func NewDependency(appConf *conf.AppConfig) (*Dependency, func(ctx context.Context)) {
+func NewDependency(appConf *conf.AppConfig, jwtConf *secret_proto.Jwt) (*Dependency, func(ctx context.Context)) {
 	otelConf := conf.LoadOtelConf()
-	jwtConf := conf.LoadJwtConf()
 	minioConf := conf.LoadMinioConf()
 	rabbitMQConf := conf.LoadRabbitMQConf()
 

@@ -281,20 +281,33 @@ components:
         id:
           type: integer
           format: int64
+          description: user_id
         full_name:
           type: string
         image:
           type: string
+          nullable: true
         background_image:
           type: string
+          nullable: true
         email:
           type: string
+        register_as:
+          type: integer
+          format: int8
+          description: |-
+            - 1=merchant / seller
+            - 2=customer
+        is_email_verified:
+          type: boolean
       required:
         - id
         - full_name
         - image
         - background_image
         - email
+        - register_as
+        - is_email_verified
     FileUploadRequest:
       type: object
       properties:
