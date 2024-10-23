@@ -104,8 +104,8 @@ func LoadJwtConf() *secret_proto.Jwt {
 	return jwtConf
 }
 
-func LoadAppConf() *AppConfig {
-	appConf := &AppConfig{}
+func LoadAppConf() *secret_proto.UserService {
+	appConf := &secret_proto.UserService{}
 	if flag.Lookup("test.v") != nil {
 		err := faker.FakeData(&appConf)
 		collection.PanicIfErr(err)

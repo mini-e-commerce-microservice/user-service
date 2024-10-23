@@ -25,7 +25,7 @@ var restApiCmd = &cobra.Command{
 		server := presenter.New(&presenter.Presenter{
 			Dependency:         dependency,
 			JwtAccessTokenConf: jwtConf.AccessToken,
-			Port:               appConf.AppPort,
+			Port:               int(appConf.AppPort),
 		})
 
 		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

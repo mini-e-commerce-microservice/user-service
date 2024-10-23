@@ -23,13 +23,13 @@ type Dependency struct {
 	OtpService  otp.Service
 }
 
-func NewDependency(appConf *conf.AppConfig, jwtConf *secret_proto.Jwt) (*Dependency, func(ctx context.Context)) {
+func NewDependency(appConf *secret_proto.UserService, jwtConf *secret_proto.Jwt) (*Dependency, func(ctx context.Context)) {
 	otelConf := conf.LoadOtelConf()
 	minioConf := conf.LoadMinioConf()
 	rabbitMQConf := conf.LoadRabbitMQConf()
 
 	otelCloseFn := infra.NewOtel(otelConf, appConf.TracerName)
-	pgdb, pgdbCloseFn := infra.NewPostgresql(appConf.DatabaseDSN)
+	pgdb, pgdbCloseFn := infra.NewPostgresql(appConf.DatabaseDsn)
 	minio := infra.NewMinio(conf.LoadMinioConf())
 	rabbitmqClient := erabbitmq.New(rabbitMQConf.Url, erabbitmq.WithOtel(rabbitMQConf.Url))
 
