@@ -39,7 +39,6 @@ func (s *service) GetUser(ctx context.Context, input GetUserInput) (output GetUs
 		Email:           userOutput.Data.Email,
 		FullName:        profileOutput.Data.FullName,
 		IsEmailVerified: userOutput.Data.IsEmailVerified,
-		RegisterAs:      userOutput.Data.RegisterAs,
 	}
 
 	var eg errgroup.Group
@@ -88,7 +87,6 @@ type GetUserOutput struct {
 	Email           string
 	FullName        string
 	IsEmailVerified bool
-	RegisterAs      int8
 	ImageProfile    null.String
 	BackgroundImage null.String
 }

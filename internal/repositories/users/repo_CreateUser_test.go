@@ -8,7 +8,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/mini-e-commerce-microservice/user-service/internal/model"
 	"github.com/mini-e-commerce-microservice/user-service/internal/repositories/users"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"github.com/stretchr/testify/require"
 	"math/rand"
 	"regexp"
@@ -34,7 +33,6 @@ func TestRepository_CreateUser(t *testing.T) {
 				Email:           faker.Email(),
 				Password:        faker.Password(),
 				IsEmailVerified: true,
-				RegisterAs:      int8(primitive.EnumRegisterAsMerchant),
 			},
 		}
 
@@ -44,7 +42,6 @@ func TestRepository_CreateUser(t *testing.T) {
 			expectedInput.Payload.Email,
 			expectedInput.Payload.Password,
 			expectedInput.Payload.IsEmailVerified,
-			expectedInput.Payload.RegisterAs,
 			sqlmock.AnyArg(),
 			sqlmock.AnyArg(),
 		).WillReturnRows(sqlmock.NewRows([]string{

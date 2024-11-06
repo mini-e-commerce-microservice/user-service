@@ -10,12 +10,11 @@ import (
 
 func (r *repository) CreateUser(ctx context.Context, input CreateUserInput) (output CreateUserOutput, err error) {
 	query := r.sq.Insert("users").Columns(
-		"email", "password", "is_email_verified", "register_as", "created_at", "updated_at", "trace_parent",
+		"email", "password", "is_email_verified", "created_at", "updated_at", "trace_parent",
 	).Values(
 		input.Payload.Email,
 		input.Payload.Password,
 		input.Payload.IsEmailVerified,
-		input.Payload.RegisterAs,
 		time.Now().UTC(),
 		time.Now().UTC(),
 		util.GetTraceParent(ctx),

@@ -32,7 +32,6 @@ func (h *handler) V1GetProfile(w http.ResponseWriter, r *http.Request) {
 		FullName:        userData.FullName,
 		Id:              userData.ID,
 		Image:           userData.ImageProfile.Ptr(),
-		RegisterAs:      userData.RegisterAs,
 		IsEmailVerified: userData.IsEmailVerified,
 	}
 

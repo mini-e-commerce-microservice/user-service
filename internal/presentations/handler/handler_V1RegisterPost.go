@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/mini-e-commerce-microservice/user-service/generated/api"
 	"github.com/mini-e-commerce-microservice/user-service/internal/services/user"
-	"github.com/mini-e-commerce-microservice/user-service/internal/util/primitive"
 	"net/http"
 )
 
@@ -21,7 +20,6 @@ func (h *handler) V1RegisterPost(w http.ResponseWriter, r *http.Request) {
 		Password:        req.Password,
 		Email:           req.Email,
 		FullName:        req.FullName,
-		RegisterAs:      primitive.EnumRegisterAs(req.RegisterAs),
 	}
 
 	if req.BackgroundImage != nil {
